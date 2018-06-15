@@ -156,7 +156,7 @@ class ListingCreate extends Component {
   render() {
     const { selectedSchema, preview } = this.state
     const schema = {
-      title: "LISTING INFORMATION",
+      title: "Create your listing",
       type: "object",
       properties: {
           name: {type: "string", title: "Name"},
@@ -186,7 +186,7 @@ class ListingCreate extends Component {
         { this.state.step === this.STEP.DETAILS && this.state.selectedSchema &&
           <div className="step-container schema-details">
             <div className="row flex-sm-row-reverse">
-              <div className="col-md-5">
+              <div className="col-12">
                 <h2>Create your listing</h2>
                 <Form
                   schema={this.state.selectedSchema}

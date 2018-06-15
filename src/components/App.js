@@ -8,21 +8,25 @@ class App extends React.Component {
     super();
 
     this.state = {
-      ids: []
+      ids: [],
+      loading: true,
     }
   }
   async componentDidMount() {
     const ids = await origin.contractService.getAllListingIds();
     
-    this.setState({ids});
+    this.setState({ids, loading: false});
   }
   render() {
-    const {ids} = this.state;
-    return (
-      <div>
-        <h1>Homepage</h1>
-
-        {ids.map(id => <ListingCard listingId={id} key={id} />)}
+    const {ids, loading} = this.state;
+    return ( 
+      loading ? <p>Loading</p> :
+      <div className="my-purchases-wrapper">
+        <div className="container">
+          <div className="col-12">
+            {ids.map(id => <ListingCard listingId={id} key={id} />)}
+          </div>
+        </div>
       </div>
     );
   }

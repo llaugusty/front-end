@@ -91,7 +91,7 @@ class MyListings extends Component {
         <div className="container">
           <div className="row">
             <div className="col-12">
-              <h1>My Listings</h1>
+              <h2>My Listings</h2>
             </div>
           </div>
           <div className="row">

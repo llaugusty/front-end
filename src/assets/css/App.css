@@ -7,6 +7,21 @@ h1 {
   margin: auto;
 }
 
+.listing-card a {
+  width: 100%;
+  display: block;
+}
+
+.listing-card a:hover {
+  opacity: 0.8;
+}
+
 .listing-card img {
-  width: 400px;
+  width: 100%;
+}
+
+.listing-card .img-detail {
+  position: absolute;
+  z-index: 100;
+  top: 0;
 }

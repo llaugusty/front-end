@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import { Button } from 'reactstrap';
+import '../assets/css/ListingDetail.css';
 
 // temporary - we should be getting an origin instance from our app,
 // not using a global singleton
@@ -31,17 +33,20 @@ class ListingDetail extends Component {
     const { address, category, loading, name, pictures, price, unitsAvailable } = this.state
     const photo = pictures && pictures.length && pictures[0]
     return (
-      <div className={`col-12 col-md-6 col-lg-4 listing-card${loading ? ' loading' : ''}`}>
-       { loading && <p>Loading</p>}
-          {photo && <img src={photo} />}
+      <div className="container">
+        <div className="col-12 listing-details">
+        { loading && <p>Loading</p>}
+            {photo && <img src={photo} />}
 
-          <div className="category placehold d-flex justify-content-between">
-            <div>{category}</div>
-            {!loading && <div>{this.props.listingId < 5 && <span className="featured badge">Featured</span>}</div>}
-          </div>
-          <h2 className="title placehold text-truncate">{name}</h2>
+            <div className="category placehold d-flex justify-content-between">
+              <div>{category}</div>
+              {!loading && <div>{this.props.listingId < 5 && <span className="featured badge">Featured</span>}</div>}
+            </div>
+            <h2 className="title placehold text-truncate">{name}</h2>
 
-          {price > 0 && <ListingCardPrices price={price} unitsAvailable={unitsAvailable} />}
+            {price > 0 && <ListingCardPrices price={price} unitsAvailable={unitsAvailable} />}
+            <div className="d-flex justify-content-between"><Button color="primary" style={{marginTop: "14px"}}>BUY</Button></div>
+        </div>
       </div>
     )
   }

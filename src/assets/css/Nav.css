@@ -1,0 +1,16 @@
+.nav a {
+    font-size: 25px;
+    border-right: 1px solid gainsboro;
+}
+
+.nav li:last-child a {
+    border-right: none;
+}
+
+.nav {
+    margin-bottom: 20px;
+}
+
+.badge {
+    border-radius: 0;
+}

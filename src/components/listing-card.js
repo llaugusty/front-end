@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
-// temporary - we should be getting an origin instance from our app,
-// not using a global singleton
+import { DropdownItem, Button, Collapse } from 'reactstrap';
+
 import origin from '../services/origins'
 
 import ListingCardPrices from './listing-card-prices.js';
@@ -12,8 +12,12 @@ class ListingCard extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      loading: true
+      loading: true,
+      collapse: false,
+      hover: false
     }
+
+    this.toggle = this.toggle.bind(this)
   }
 
   async componentDidMount() {
@@ -26,24 +30,26 @@ class ListingCard extends Component {
     }
   }
 
+  toggle() {
+    this.setState({ collapse: !this.state.collapse });
+  }
+
   render() {
     const { address, category, loading, name, pictures, price, unitsAvailable } = this.state
     const photo = pictures && pictures.length && pictures[0]
 
     return (
       <div className="listing-card">
-          <div>
-            <a href={`/#/listing/${this.props.listingId}`}>{loading ? 'Loading' : 'Detail'}</a>
-          </div>
-          {photo && <img src={photo} />}
-
-          <div className="category placehold d-flex justify-content-between">
-            <div>{category}</div>
-            {!loading && <div>{this.props.listingId < 5 && <span className="featured badge">Featured</span>}</div>}
-          </div>
-          <h2 className="title placehold text-truncate">{name}</h2>
-
-          {price > 0 && <ListingCardPrices price={price} unitsAvailable={unitsAvailable} />}
+          <div className="">
+              <div>{category}</div>
+            </div>
+            {price > 0 && <ListingCardPrices price={price} unitsAvailable={unitsAvailable} />}
+            <Button color="primary" onClick={this.toggle} style={{ marginBottom: '1rem' }}> <h2 className="title placehold text-truncate">{name}</h2></Button>
+          <Collapse isOpen={this.state.collapse}>
+            <div style={{position: "relative"}}>
+              <a onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} href={`/#/listing/${this.props.listingId}`}>{photo && <img src={photo} />}</a>
+            </div>
+          </Collapse>
       </div>
     )
   }

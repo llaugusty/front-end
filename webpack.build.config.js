@@ -22,11 +22,13 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: 'css-loader'
-        }),
-        include: defaultInclude
+        use: [
+              'style-loader',
+              {
+                loader: 'css-loader',
+                options: { url: false }
+              }
+            ]
       },
       {
         test: /\.jsx?$/,

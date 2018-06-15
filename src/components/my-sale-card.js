@@ -4,6 +4,9 @@ import Timelapse from './timelapse'
 import TransactionProgress from './transaction-progress'
 import origins from '../services/origins'
 
+import '../assets/css/MySaleCard.css';
+
+
 class MySaleCard extends Component {
   constructor() {
     super();
@@ -60,22 +63,19 @@ class MySaleCard extends Component {
                 {/*<p className="quantity">Quantity: {quantity.toLocaleString()}</p>*/}
               </div>
             </div>
-            <div className="timestamp-container order-2 text-muted text-right">
-              <p className="timestamp"><Timelapse reactive={false} reference={soldAt} /></p>
-            </div>
             <div className="aspect-ratio order-1 order-lg-3">
               <div className={`${photo ? '' : 'placeholder '}image-container d-flex justify-content-center`}>
                 <img src={photo || 'images/default-image.svg'} role="presentation" />
               </div>
             </div>
           </div>
-          <TransactionProgress currentStep={step} purchase={purchase} perspective="seller" subdued="true" />
+          <div>{step}</div>
           <div className="d-flex justify-content-between actions">
             {step === 1 && <p><strong>Next Step:</strong> Send the order to buyer</p>}
             {step === 2 && <p><strong>Next Step:</strong> Wait for buyer to receive order</p>}
             {step === 3 && <p><strong>Next Step:</strong> Withdraw funds</p>}
             {step === 4 && <p>This order is complete</p>}
-            <p className="link-container"><Link to={`/purchases/${purchase.address}`}>View Details<img src="images/carat-blue.svg" className="carat" alt="right carat" /></Link></p>
+            <p className="link-container"><Link to={`/purchases/${purchase.address}`}>View Details</Link></p>
           </div>
         </div>
       </div>

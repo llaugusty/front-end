@@ -3,6 +3,8 @@ import MySaleCard from './my-sale-card'
 
 import origin from '../services/origins'
 
+import '../assets/css/MySales.css';
+
 class MySales extends Component {
   constructor(props) {
     super(props)
@@ -10,7 +12,7 @@ class MySales extends Component {
     this.loadListing = this.loadListing.bind(this)
     this.loadPurchase = this.loadPurchase.bind(this)
     this.state = {
-      filter: 'pending',
+      filter: 'all',
       listings: [],
       loading: true,
       purchases: [],
@@ -110,32 +112,17 @@ class MySales extends Component {
         <div className="container">
           <div className="row">
             <div className="col-12">
-              <h1>My Sales</h1>
+              <h2>My Sales</h2>
             </div>
           </div>
-          <div className="row">
-            <div className="col-12 col-md-3">
-              {loading && 'Loading...'}
-              {!loading && !purchases.length && 'You currently have no sales.'}
-              {!loading && !!purchases.length &&
-                <div className="filters list-group flex-row flex-md-column">
-                  <a className={`list-group-item list-group-item-action${filter === 'pending' ? ' active' : ''}`}
-                    onClick={() => this.setState({ filter: 'pending' })}>Pending</a>
-                  <a className={`list-group-item list-group-item-action${filter === 'complete' ? ' active' : ''}`}
-                    onClick={() => this.setState({ filter: 'complete' })}>Complete</a>
-                  <a className={`list-group-item list-group-item-action${filter === 'all' ? ' active' : ''}`}
-                    onClick={() => this.setState({ filter: 'all' })}>All</a>
-                </div>
-              }
-            </div>
-            <div className="col-12 col-md-9">
-              <div className="my-listings-list">
-                {filteredPurchases.map(p => (
-                  <MySaleCard key={`my-purchase-${p.address}`}
-                    listing={listings.find(l => l.address === p.listingAddress)}
-                    purchase={p} />
-                ))}
-              </div>
+          <div className="row col-12 my-sales">
+            <div className="my-listings-list">
+              {filteredPurchases.map(p => (
+                <MySaleCard 
+                  key={`my-purchase-${p.address}`}
+                  listing={listings.find(l => l.address === p.listingAddress)}
+                  purchase={p} />
+              ))}
             </div>
           </div>
         </div>
