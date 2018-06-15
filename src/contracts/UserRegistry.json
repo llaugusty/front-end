@@ -1,0 +1,68 @@
+{
+    "abi": [
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "users",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "name": "_address",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "_identity",
+                    "type": "address"
+                }
+            ],
+            "name": "NewUser",
+            "type": "event"
+        },
+        {
+            "constant": false,
+            "inputs": [],
+            "name": "registerUser",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [],
+            "name": "clearUser",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "bytecode": "0x608060405234801561001057600080fd5b506101f9806100206000396000f3006080604052600436106100565763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416634d3820eb811461005b57806376b1658814610072578063a87430ba14610087575b600080fd5b34801561006757600080fd5b506100706100de565b005b34801561007e57600080fd5b50610070610163565b34801561009357600080fd5b506100b573ffffffffffffffffffffffffffffffffffffffff600435166101a5565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b3273ffffffffffffffffffffffffffffffffffffffff90811660008181526020818152604091829020805473ffffffffffffffffffffffffffffffffffffffff1916339095169485179055815192835282019290925281517fff3eabe1067b08ba8af3e8d3191eebeae9b35de7a7aeee40f2ad1ceb6a887607929181900390910190a1565b73ffffffffffffffffffffffffffffffffffffffff33166000908152602081905260409020805473ffffffffffffffffffffffffffffffffffffffff19169055565b60006020819052908152604090205473ffffffffffffffffffffffffffffffffffffffff16815600a165627a7a72305820a79aa78e3330e5ab3def7d5157cc548056698173b11f17322a7008481bd27d640029",
+    "contractName": "UserRegistry",
+    "networks": {
+        "999": {
+            "events": {},
+            "links": {},
+            "address": "0xf25186b5081ff5ce73482ad761db0eb0d25abfbf",
+            "transactionHash": "0xa3619e6a66ea97c463914f9f8e1661cdec61eac43ddcd742ac0c81159962a191"
+        }
+    }
+}

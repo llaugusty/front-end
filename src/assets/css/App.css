@@ -1,0 +1,12 @@
+h1 {
+  font-family: helvetica;
+  font-weight: 200;
+}
+
+.listing-card {
+  margin: auto;
+}
+
+.listing-card img {
+  width: 400px;
+}
