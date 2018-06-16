@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import MyPurchaseCard from './my-purchase-card'
 
-import { storeWeb3Intent } from '../actions/App'
-import origin from '../services/origin'
+import origin from '../services/origins'
 
 class MyPurchases extends Component {
   constructor(props) {
@@ -14,10 +12,8 @@ class MyPurchases extends Component {
     this.state = { filter: 'pending', purchases: [], loading: true }
   }
 
-  componentDidMount() {
-    if(!web3.givenProvider || !this.props.web3Account) {
-      this.props.storeWeb3Intent('view your purchases')
-    }
+  async componentWillReceiveProps() {
+    await this.getListingIds()
   }
 
   /*
@@ -51,7 +47,7 @@ class MyPurchases extends Component {
   async getPurchasesLength(addr) {
     try {
       const len = await origin.listings.purchasesLength(addr)
-
+      console.log('length', len)
       if (!len) {
         return len
       }
@@ -66,6 +62,7 @@ class MyPurchases extends Component {
     try {
       const listing = await origin.listings.getByIndex(id)
 
+      
       return this.getPurchasesLength(listing.address)
     } catch(error) {
       console.error(`Error fetching contract or IPFS info for listingId: ${id}`)
@@ -75,8 +72,9 @@ class MyPurchases extends Component {
   async loadPurchase(addr) {
     try {
       const purchase = await origin.purchases.get(addr)
-      
-      if (purchase.buyerAddress === this.props.web3Account) {
+      const accounts = await origin.contractService.web3.eth.getAccounts();
+
+      if (purchase.buyerAddress === accounts[this.props.id]) {
         const purchases = [...this.state.purchases, purchase]
 
         this.setState({ purchases })
@@ -116,23 +114,9 @@ class MyPurchases extends Component {
             </div>
           </div>
           <div className="row">
-            <div className="col-12 col-md-3">
-              {loading && 'Loading...'}
-              {!loading && !purchases.length && 'You currently have no purchases.'}
-              {!loading && !!purchases.length &&
-                <div className="filters list-group flex-row flex-md-column">
-                  <a className={`list-group-item list-group-item-action${filter === 'pending' ? ' active' : ''}`}
-                    onClick={() => this.setState({ filter: 'pending' })}>Pending</a>
-                  <a className={`list-group-item list-group-item-action${filter === 'complete' ? ' active' : ''}`}
-                    onClick={() => this.setState({ filter: 'complete' })}>Complete</a>
-                  <a className={`list-group-item list-group-item-action${filter === 'all' ? ' active' : ''}`}
-                    onClick={() => this.setState({ filter: 'all' })}>All</a>
-                </div>
-              }
-            </div>
-            <div className="col-12 col-md-9">
+            <div className="col-12">
               <div className="my-listings-list">
-                {filteredPurchases.map(p => <MyPurchaseCard key={`my-purchase-${p.address}`} purchase={p} />)}
+                {purchases.map(p => <MyPurchaseCard key={`my-purchase-${p.address}`} purchase={p} />)}
               </div>
             </div>
           </div>
@@ -142,15 +126,4 @@ class MyPurchases extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    web3Account: state.app.web3.account,
-    web3Intent: state.app.web3.intent,
-  }
-}
-
-const mapDispatchToProps = dispatch => ({
-  storeWeb3Intent: intent => dispatch(storeWeb3Intent(intent)),
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(MyPurchases)
+export default MyPurchases

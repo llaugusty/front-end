@@ -12,7 +12,7 @@ var resources = {
 }
 
 const defaultBridgeServer = "https://bridge.originprotocol.com"
-const defaultIpfsDomain = "gateway.originprotocol.com"
+const defaultIpfsDomain = "localhost"
 const defaultIpfsApiPort = "5002"
 const defaultIpfsGatewayPort = "1234"
 const defaultIpfsGatewayProtocol = "https"

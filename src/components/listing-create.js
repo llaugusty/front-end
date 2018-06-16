@@ -5,6 +5,7 @@ import origin from '../services/origins'
 import Form from 'react-jsonschema-form'
 import Modal from './modal'
 import Dropzone from 'react-dropzone'
+import { Button } from 'reactstrap';
 
 import '../assets/css/CreateListing.css';
 
@@ -56,6 +57,8 @@ class ListingCreate extends Component {
     this.handleSchemaSelection = this.handleSchemaSelection.bind(this)
     this.onDetailsEntered = this.onDetailsEntered.bind(this)
     this.onDrop = this.onDrop.bind(this)
+    this.onChange = this.onChange.bind(this)
+    this.onSubmitListing = this.onSubmitListing.bind(this)
   }
 
   handleSchemaSelection() {
@@ -110,18 +113,15 @@ class ListingCreate extends Component {
     }
   }
 
-  async onSubmitListing(formListing, selectedSchemaType) {
+  async onSubmitListing() {
     try {
+      let {formListing, pictures} = this.state;
+      formListing.formData.pictures = pictures;
       console.log(formListing)
-      this.setState({ step: this.STEP.METAMASK })
-      const transactionReceipt = await origin.listings.create(formListing.formData, selectedSchemaType)
-      this.setState({ step: this.STEP.PROCESSING })
-      // Submitted to blockchain, now wait for confirmation
-      await origin.contractService.waitTransactionFinished(transactionReceipt.transactionHash)
-      this.setState({ step: this.STEP.SUCCESS })
+      const transactionReceipt = await origin.listings.create(formListing.formData, this.props.id)
+      // await origin.contractService.waitTransactionFinished(transactionReceipt.transactionHash)
     } catch (error) {
       console.error(error)
-      this.setState({ step: this.STEP.ERROR })
     }
   }
 
@@ -151,6 +151,10 @@ class ListingCreate extends Component {
     });
 
     this.setState({preview, pictures});
+}
+
+onChange(formListing) {
+  this.setState({formListing: formListing});
 }
 
   render() {
@@ -187,8 +191,8 @@ class ListingCreate extends Component {
           <div className="step-container schema-details">
             <div className="row flex-sm-row-reverse">
               <div className="col-12">
-                <h2>Create your listing</h2>
-                <Form
+                {/* <h2>Create your listing</h2> */}
+                {/* <Form
                   schema={this.state.selectedSchema}
                   onSubmit={this.onDetailsEntered}
                   formData={this.state.formListing.formData}
@@ -197,8 +201,7 @@ class ListingCreate extends Component {
                   <div className="btn-container">
                     <button type="submit" className="float-right btn btn-primary">Continue</button>
                   </div>
-                </Form>
-
+                </Form> */}
                 <Form
                   schema={schema}
                   uiSchema={uiSchema}
@@ -213,7 +216,8 @@ class ListingCreate extends Component {
                         {preview.map(picture => <img src={picture}/>)}
                     </div>
                   </Dropzone>
-                    <button type="submit" className="float-center btn btn-secondary">Continue</button>
+                    {/* <Button onClick={this.onDetailsEntered} color="primary" style={{float: "right"}}>CREATE</Button> */}
+                    <Button color="primary" onClick={this.onSubmitListing}>Submit</Button>
                 </Form>
               </div>
               <div className="col-md-6">

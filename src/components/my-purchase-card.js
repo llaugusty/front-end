@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import $ from 'jquery'
 import moment from 'moment'
 
-import origin from '../services/origin'
+import origin from '../services/origins'
 
 class MyPurchaseCard extends Component {
   constructor(props) {
@@ -25,8 +25,6 @@ class MyPurchaseCard extends Component {
 
   componentDidMount() {
     this.loadListing(this.props.purchase.listingAddress)
-
-    $('[data-toggle="tooltip"]').tooltip()
   }
 
   render() {

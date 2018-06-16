@@ -1,5 +1,5 @@
 .nav a {
-    font-size: 25px;
+    font-size: 20px;
     border-right: 1px solid gainsboro;
 }
 
@@ -13,4 +13,8 @@
 
 .badge {
     border-radius: 0;
+}
+
+.lg-btn {
+    height: 50px;
 }

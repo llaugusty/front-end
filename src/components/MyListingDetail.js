@@ -9,7 +9,7 @@ import origin from '../services/origins'
 
 import ListingCardPrices from './listing-card-prices.js';
 
-class ListingDetail extends Component {
+class MylistingDetail extends Component {
 
   constructor(props) {
     super(props)
@@ -24,7 +24,7 @@ class ListingDetail extends Component {
   async componentDidMount() {
     console.log('propps', this.props);
     try {
-      const listing = await origin.listings.getByIndex(this.props.match.params.id)
+      const listing = await origin.listings.get(this.props.match.params.address)
       console.log('listing', listing)
       const obj = Object.assign({}, listing, { loading: false })
       this.setState(obj)
@@ -62,9 +62,6 @@ class ListingDetail extends Component {
             <h2 className="title placehold text-truncate">{name}</h2>
             
             {price > 0 && <ListingCardPrices price={price} unitsAvailable={unitsAvailable} />}
-            <div className="d-flex justify-content-between">
-              <Button onClick={this.handleBuyClicked} color="primary" style={{margin: "5px 0px", width: "120px"}}>BUY</Button>
-            </div>
             <h3>{location}</h3>
             <p>{description}</p>
         </div>
@@ -73,4 +70,4 @@ class ListingDetail extends Component {
   }
 }
 
-export default ListingDetail
+export default MylistingDetail

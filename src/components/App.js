@@ -14,17 +14,26 @@ class App extends React.Component {
   }
   async componentDidMount() {
     const ids = await origin.contractService.getAllListingIds();
+    const accounts = await origin.contractService.web3.eth.getAccounts();
     
-    this.setState({ids, loading: false});
+    this.setState({ids, loading: false, account: accounts[this.props.id]});
   }
+
+  async componentWillReceiveProps(nextProps) {
+    let account = await origin.contractService.web3.eth.getAccounts();
+
+    this.setState({account: account[this.props.id]})
+  }
+
+
   render() {
-    const {ids, loading} = this.state;
+    const {ids, loading, account} = this.state;
     return ( 
       loading ? <p>Loading</p> :
       <div className="my-purchases-wrapper">
         <div className="container">
           <div className="col-12">
-            {ids.map(id => <ListingCard listingId={id} key={id} />)}
+            {ids.map(id => <ListingCard account={account} listingId={id} key={id} />)}
           </div>
         </div>
       </div>

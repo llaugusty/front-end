@@ -3,12 +3,16 @@ import MyListingCard from './my-listing-card'
 
 import origin from '../services/origins'
 
+import '../assets/css/MyListings.css';
+
 class MyListings extends Component {
   constructor(props) {
     super(props)
 
     this.handleUpdate = this.handleUpdate.bind(this)
     this.loadListing = this.loadListing.bind(this)
+    this.getAccount = this.getAccount.bind(this)
+
     this.state = {
       filter: 'all',
       listings: [],
@@ -18,14 +22,6 @@ class MyListings extends Component {
 
   componentDidMount() {
   }
-
-  /*
-  * WARNING: These functions don't actually return what they might imply.
-  * They use return statements to chain together async calls. Oops.
-  *
-  * For now, we mock a getBySellerAddress request by fetching all
-  * listings individually, filtering each by sellerAddress.
-  */
 
   async getListingIds() {
     try {
@@ -41,7 +37,7 @@ class MyListings extends Component {
     try {
       const listing = await origin.listings.getByIndex(id)
 
-      if (listing.sellerAddress === this.props.web3Account) {
+      if (listing.sellerAddress === this.state.account) {
         const listings = [...this.state.listings, listing]
 
         this.setState({ listings })
@@ -53,11 +49,24 @@ class MyListings extends Component {
     }
   }
 
+  async getAccount() {
+    const accounts = await origin.contractService.web3.eth.getAccounts();
+    
+    this.setState({ account: accounts[this.props.id] });
+  }
+
   async componentWillMount() {
+    await this.getAccount();
     await this.getListingIds()
 
     this.setState({ loading: false })
   }
+
+  async componentWillReceiveProps(nextProps) {
+    await this.getAccount();
+    await this.getListingIds()
+  }
+
 
   async handleUpdate(address) {
     try {
@@ -75,16 +84,6 @@ class MyListings extends Component {
 
   render() {
     const { filter, listings, loading } = this.state
-    const filteredListings = (() => {
-      switch(filter) {
-        case 'active':
-          return listings.filter(l => l.unitsAvailable)
-        case 'inactive':
-          return listings.filter(l => !l.unitsAvailable)
-        default:
-          return listings
-      }
-    })()
 
     return (
       <div className="my-listings-wrapper">
@@ -94,22 +93,9 @@ class MyListings extends Component {
               <h2>My Listings</h2>
             </div>
           </div>
-          <div className="row">
-            <div className="col-12 col-md-3">
-              {loading && 'Loading...'}
-              {!loading && !listings.length && 'You currently have no listings.'}
-              {!loading && !!listings.length &&
-                <div className="filters list-group flex-row flex-md-column">
-                  <a className={`list-group-item list-group-item-action${filter === 'all' ? ' active' : ''}`} onClick={() => this.setState({ filter: 'all' })}>All</a>
-                  <a className={`list-group-item list-group-item-action${filter === 'active' ? ' active' : ''}`} onClick={() => this.setState({ filter: 'active' })}>Active</a>
-                  <a className={`list-group-item list-group-item-action${filter === 'inactive' ? ' active' : ''}`} onClick={() => this.setState({ filter: 'inactive' })}>Inactive</a>
-                </div>
-              }
-            </div>
-            <div className="col-12 col-md-9">
-              <div className="my-listings-list">
-                {filteredListings.map(l => <MyListingCard key={`my-listing-${l.address}`} listing={l} handleUpdate={this.handleUpdate} />)}
-              </div>
+          <div className="row col-12">
+            <div className="my-listings-list">
+              {listings.map(l => <MyListingCard key={`my-listing-${l.address}`} listing={l} handleUpdate={this.handleUpdate} />)}
             </div>
           </div>
         </div>

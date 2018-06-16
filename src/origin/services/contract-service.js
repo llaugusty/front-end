@@ -77,7 +77,7 @@ class ContractService {
   // Returns the first account listed
   async currentAccount() {
     const accounts = await this.web3.eth.getAccounts()
-    return accounts[0]
+    return accounts[this.id]
   }
 
   // async convenience method for getting block details
@@ -116,7 +116,7 @@ class ContractService {
       // Note we cannot get the listingId returned by our contract.
       // See: https://forum.ethereum.org/discussion/comment/31529/#Comment_31529
       return instance.methods
-        .create(this.getBytes32FromIpfsHash(ipfsListing), weiToGive, units)
+        .create(ipfsListing, weiToGive, units)
         .send({ from: account, gas: 4476768 })
     } catch (error) {
       console.error("Error submitting to the Ethereum blockchain: " + error)

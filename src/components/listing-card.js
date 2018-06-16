@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
-import { DropdownItem, Button, Collapse } from 'reactstrap';
+import { DropdownItem, Button, Collapse, Card, CardImg, CardText, CardBody,
+  CardTitle, CardSubtitle } from 'reactstrap';
 
 import origin from '../services/origins'
 
@@ -35,21 +36,30 @@ class ListingCard extends Component {
   }
 
   render() {
-    const { address, category, loading, name, pictures, price, unitsAvailable } = this.state
+    const { sellerAddress, address, category, loading, name, pictures, price, unitsAvailable } = this.state
     const photo = pictures && pictures.length && pictures[0]
+    
+    console.log('test', sellerAddress, this.props.account);
 
-    return (
+    return ( sellerAddress == this.props.account ? null :
       <div className="listing-card">
-          <div className="">
-              <div>{category}</div>
-            </div>
-            {price > 0 && <ListingCardPrices price={price} unitsAvailable={unitsAvailable} />}
-            <Button color="primary" onClick={this.toggle} style={{ marginBottom: '1rem' }}> <h2 className="title placehold text-truncate">{name}</h2></Button>
-          <Collapse isOpen={this.state.collapse}>
-            <div style={{position: "relative"}}>
-              <a onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} href={`/#/listing/${this.props.listingId}`}>{photo && <img src={photo} />}</a>
-            </div>
-          </Collapse>
+        <Card>
+          <CardBody>
+            {loading ? "Loading" : 
+            <div>
+            <div className="">
+                <CardTitle>{category}</CardTitle>
+              </div>
+              {price > 0 && <ListingCardPrices price={price} unitsAvailable={unitsAvailable} />}
+              <Button color="primary" onClick={this.toggle} style={{ marginBottom: '1rem', marginTop: "5px" }}> <h5 className="title placehold text-truncate">{name}</h5></Button>
+            <Collapse isOpen={this.state.collapse}>
+              <div style={{position: "relative"}}>
+                <a onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} href={`/#/listing/${this.props.listingId}`}>{photo && <img src={photo} />}</a>
+              </div>
+            </Collapse></div>
+            }
+          </CardBody>
+          </Card>
       </div>
     )
   }

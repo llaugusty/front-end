@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import Timelapse from './timelapse'
-import TransactionProgress from './transaction-progress'
 import origins from '../services/origins'
 
 import '../assets/css/MySaleCard.css';
@@ -51,7 +49,7 @@ class MySaleCard extends Component {
 
     return (
       <div className="sale card"> 
-        <div className="card-body">
+        <div className="card-body" style={{paddingBottom: 0}}>
           <div className="d-flex flex-column flex-lg-row">
             <div className="transaction order-3 order-lg-1">
               <h2 className="title"><Link to={`/purchases/${purchase.address}`}>{name}</Link></h2>
@@ -69,8 +67,7 @@ class MySaleCard extends Component {
               </div>
             </div>
           </div>
-          <div>{step}</div>
-          <div className="d-flex justify-content-between actions">
+          <div className="d-flex justify-content-between actions" style={{marginTop: "20px"}}>
             {step === 1 && <p><strong>Next Step:</strong> Send the order to buyer</p>}
             {step === 2 && <p><strong>Next Step:</strong> Wait for buyer to receive order</p>}
             {step === 3 && <p><strong>Next Step:</strong> Withdraw funds</p>}

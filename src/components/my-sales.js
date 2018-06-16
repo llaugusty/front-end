@@ -19,6 +19,11 @@ class MySales extends Component {
     }
   }
 
+  async componentWillReceiveProps(nextProps) {
+    await this.getListingIds()
+  }
+
+
   async getListingIds() {
     try {
       console.log('hello world');
@@ -61,7 +66,7 @@ class MySales extends Component {
       const accounts = await origin.contractService.web3.eth.getAccounts();
 
       // only save to state and get purchases for current user's listings
-      if (listing.sellerAddress === accounts[0]) {
+      if (listing.sellerAddress === accounts[this.props.id]) {
         const listings = [...this.state.listings, listing]
 
         this.setState({ listings })

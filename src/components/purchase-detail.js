@@ -1,15 +1,12 @@
 import React, { Component, Fragment } from 'react'
-import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import $ from 'jquery'
 import moment from 'moment'
 import Avatar from './avatar'
-import Review from './review'
 import TransactionEvent from '../pages/purchases/transaction-event'
 import TransactionProgress from './transaction-progress'
-import UserCard from './user-card'
 
-import origin from '../services/origin'
+import origin from '../services/origins'
 
 const web3 = origin.contractService.web3
 
@@ -99,7 +96,6 @@ class PurchaseDetail extends Component {
   }
 
   componentDidMount() {
-    $('[data-toggle="tooltip"]').tooltip()
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -129,8 +125,8 @@ class PurchaseDetail extends Component {
   }
 
   async loadPurchase() {
-    const { purchaseAddress } = this.props
-
+    let purchaseAddress = this.props.match.params.address;
+    console.log('purchase', purchaseAddress);
     try {
       const purchase = await origin.purchases.get(purchaseAddress)
       console.log(purchase)
@@ -161,9 +157,9 @@ class PurchaseDetail extends Component {
       const length = await origin.listings.purchasesLength(listingAddress)
       console.log('Purchase count:', length)
 
-      const purchaseAddresses = await Promise.all(
-        [...Array(length).keys()].map(i => this.getPurchaseAddress(listingAddress, i))
-      )
+      // const purchaseAddresses = await Promise.all(
+      //   [...Array(length).keys()].map(i => this.getPurchaseAddress(listingAddress, i))
+      // )
 
       return await Promise.all(
         purchaseAddresses.map(addr => origin.purchases.get(addr))
@@ -181,7 +177,7 @@ class PurchaseDetail extends Component {
       const reviews = await Promise.all(
         purchases.map(p => origin.reviews.find({ purchaseAddress: p.address }))
       )
-      const flattened = [].concat(...reviews)
+      const flattened = [].concat(reviews)
       console.log('Reviews:', flattened)
       this.setState({ reviews: flattened })
     } catch(error) {
@@ -193,7 +189,7 @@ class PurchaseDetail extends Component {
   async loadBuyer(addr) {
     try {
       const user = await origin.users.get(addr)
-      this.setState({ buyer: { ...user, address: addr } })
+      this.setState({ buyer: { user, address: addr } })
       console.log('Buyer: ', this.state.buyer)
     } catch(error) {
       console.error(`Error loading buyer ${addr}`)
@@ -204,7 +200,8 @@ class PurchaseDetail extends Component {
   async loadSeller(addr) {
     try {
       const user = await origin.users.get(addr)
-      this.setState({ seller: { ...user, address: addr } })
+      console.log('user', user);
+      this.setState({ seller: { user, address: addr } })
       console.log('Seller: ', this.state.seller)
     } catch(error) {
       console.error(`Error loading seller ${addr}`)
@@ -274,7 +271,7 @@ class PurchaseDetail extends Component {
   */
   handleRating(rating) {
     this.setState(prevState => {
-      return { form: { ...prevState.form, rating } }
+      return { form: { form: prevState.form, rating } }
     })
   }
 
@@ -283,7 +280,7 @@ class PurchaseDetail extends Component {
     const { value } = e.target
 
     this.setState(prevState => {
-      return { form: { ...prevState.form, reviewText: value } }
+      return { form: { form: prevState.form, reviewText: value } }
     })
   }
 
@@ -368,8 +365,6 @@ class PurchaseDetail extends Component {
           <div className="row">
             <div className="col-12">
               <div className="brdcrmb">
-                {perspective === 'buyer' ? 'Purchased' : 'Sold'}
-                {' from '}
                 <Link to={`/users/${counterpartyUser.address}`}>{counterpartyUser.name}</Link>
               </div>
               <h1>{listing.name}</h1>
@@ -380,34 +375,22 @@ class PurchaseDetail extends Component {
               <h2>Transaction Status</h2>
               <div className="row">
                 <div className="col-6">
-                  <Link to={`/users/${seller.address}`}>
+
                     <div className="d-flex">
-                      <Avatar
-                        image={seller.profile && seller.profile.avatar}
-                        placeholderStyle={perspective === 'seller' ? 'green' : 'blue'}
-                      />
                       <div className="identification d-flex flex-column justify-content-between text-truncate">
                         <div><span className="badge badge-dark">Seller</span></div>
-                        <div className="name">{sellerName}</div>
                         <div className="address text-muted text-truncate">{seller.address}</div>
                       </div>
                     </div>
-                  </Link>
+
                 </div>
                 <div className="col-6">
-                  <Link to={`/users/${buyer.address}`}>
                     <div className="d-flex justify-content-end">
                       <div className="identification d-flex flex-column text-right justify-content-between text-truncate">
                         <div><span className="badge badge-dark">Buyer</span></div>
-                        <div className="name">{buyerName}</div>
                         <div className="address text-muted text-truncate">{buyer.address}</div>
                       </div>
-                      <Avatar
-                        image={buyer.profile && buyer.profile.avatar}
-                        placeholderStyle={perspective === 'buyer' ? 'green' : 'blue'}
-                      />
                     </div>
-                  </Link>
                 </div>
                 <div className="col-12">
                   <TransactionProgress currentStep={step} maxStep={maxStep} purchase={listing} perspective={perspective} />
@@ -426,7 +409,7 @@ class PurchaseDetail extends Component {
                         }}>
                           <div className="form-group">
                             <label htmlFor="review">Review</label>
-                            <div className="stars">{[...Array(5)].map((undef, i) => {
+                            {/* <div className="stars">{[...Array(5)].map((undef, i) => {
                               return (
                                 <img
                                   key={`rating-star-${i}`}
@@ -435,7 +418,7 @@ class PurchaseDetail extends Component {
                                   onClick={() => this.handleRating(i + 1)}
                                 />
                               )
-                            })}</div>
+                            })}</div> */}
                             <textarea
                               rows="4"
                               id="review"
@@ -460,41 +443,10 @@ class PurchaseDetail extends Component {
                   </div>
                 }
               </div>
-              <h2>Transaction History</h2>
-              <table className="table table-striped">
-                <thead>
-                  <tr>
-                    <th scope="col" style={{ width: '200px' }}>TxName</th>
-                    <th scope="col">TxHash</th>
-                    <th scope="col">From</th>
-                    <th scope="col">To</th>
-                  </tr>
-                </thead>
-                <tbody>
-
-                  {paidAt &&
-                    <TransactionEvent timestamp={paidAt} eventName="Payment received" transaction={paymentEvent} buyer={buyer} seller={seller} />
-                  }
-
-                  {fulfilledAt &&
-                    <TransactionEvent timestamp={fulfilledAt} eventName="Sent by seller" transaction={fulfillmentEvent} buyer={buyer} seller={seller} />
-                  }
-
-                  {receivedAt &&
-                    <TransactionEvent timestamp={receivedAt} eventName="Received by buyer" transaction={receiptEvent} buyer={buyer} seller={seller} />
-                  }
-
-                  {withdrawnAt &&
-                    <TransactionEvent timestamp={withdrawnAt} eventName="Funds withdrawn" transaction={withdrawalEvent} buyer={buyer} seller={seller} />
-                  }
-
-                </tbody>
-              </table>
-              <hr />
             </div>
-            <div className="col-12 col-lg-4">
+            {/* <div className="col-12 col-lg-4">
               {counterpartyUser.address && <UserCard title={counterparty} userAddress={counterpartyUser.address} />}
-            </div>
+            </div> */}
           </div>
           <div className="row">
             <div className="col-12 col-lg-8">
@@ -517,39 +469,15 @@ class PurchaseDetail extends Component {
                     {/*!!listing.unitsAvailable && listing.unitsAvailable < 5 &&
                       <div className="units-available text-danger">Just {listing.unitsAvailable.toLocaleString()} left!</div>
                     */}
-                    {listing.ipfsHash &&
-                      <div className="link-container">
-                        <a href={origin.ipfsService.gatewayUrlForHash(listing.ipfsHash)} target="_blank">
-                          View on IPFS<img src="images/carat-blue.svg" className="carat" alt="right carat" />
-                        </a>
-                      </div>
-                    }
                   </div>
                   <hr />
                 </Fragment>
               }
               <div className="reviews">
                 <h2>Reviews <span className="review-count">{Number(buyersReviews.length).toLocaleString()}</span></h2>
-                {buyersReviews.map(r => <Review key={r.transactionHash} review={r} />)}
                 {/* To Do: pagination */}
                 {/* <a href="#" className="reviews-link">Read More<img src="/images/carat-blue.svg" className="down carat" alt="down carat" /></a> */}
               </div>
-            </div>
-            <div className="col-12 col-lg-4">
-              {soldAt &&
-                <div className="summary text-center">
-                  {perspective === 'buyer' && <div className="purchased tag"><div>Purchased</div></div>}
-                  {perspective === 'seller' && <div className="sold tag"><div>Sold</div></div>}
-                  <div className="recap">{counterpartyUser.name} {perspective === 'buyer' ? 'sold' : 'purchased'} on {moment(soldAt).format('MMMM D, YYYY')}</div>
-                  <hr className="dark sm" />
-                  <div className="d-flex">
-                    <div className="text-left">Price</div>
-                    <div className="text-right">{price}</div>
-                  </div>
-                  <hr className="dark sm" />
-                  <div className={`status ${status}`}>This listing is {status}</div>
-                </div>
-              }
             </div>
           </div>
         </div>
@@ -558,10 +486,4 @@ class PurchaseDetail extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    web3Account: state.app.web3.account,
-  }
-}
-
-export default connect(mapStateToProps)(PurchaseDetail)
+export default PurchaseDetail

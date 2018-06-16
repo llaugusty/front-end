@@ -15,7 +15,7 @@ class Listings extends ResourceBase {
 
   async get(address) {
     const contractData = await this.contractFn(address, "data")
-    let ipfsHash = this.contractService.getIpfsHashFromBytes32(contractData[1])
+    let ipfsHash = contractData[1];
     const ipfsData = await this.ipfsService.getFile(ipfsHash)
 
     let listing = {
@@ -66,7 +66,8 @@ class Listings extends ResourceBase {
     return listing
   }
 
-  async create(data, schemaType) {
+  async create(data, id) {
+    console.log('data', data);
     if (data.price == undefined) {
       throw "You must include a price"
     }
@@ -81,6 +82,8 @@ class Listings extends ResourceBase {
       'data': formListing.formData,
     }
 
+    console.log('jsonBlob', jsonBlob)
+    console.log('ipfs', this.ipfsService);
     let ipfsHash
     try {
       // Submit to IPFS
@@ -99,7 +102,8 @@ class Listings extends ResourceBase {
       transactionReceipt = await this.contractService.submitListing(
         ipfsHash,
         formListing.formData.price,
-        units)
+        units,
+        id)
     } catch (error) {
       console.error(error)
       throw new Error(`ETH Failure: ${error}`)
