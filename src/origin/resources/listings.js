@@ -41,6 +41,7 @@ class Listings extends ResourceBase {
   // This method is DEPRCIATED
   async getByIndex(listingIndex) {
     const contractData = await this.contractService.getListing(listingIndex)
+    console.log('contract', contractData);
     const ipfsData = await this.ipfsService.getFile(contractData.ipfsHash)
     // ipfsService should have already checked the contents match the hash,
     // and that the signature validates
@@ -88,6 +89,7 @@ class Listings extends ResourceBase {
     try {
       // Submit to IPFS
       ipfsHash = await this.ipfsService.submitFile(jsonBlob)
+      console.log('ipfsHash', ipfsHash)
     } catch (error) {
       throw new Error(`IPFS Failure: ${error}`)
     }

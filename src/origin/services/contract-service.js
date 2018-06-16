@@ -197,6 +197,7 @@ class ContractService {
       throw new Error(`Error fetching listingId: ${listingId}`)
     }
 
+    console.log('listting', listing)
     // Listing is returned as array of properties.
     // IPFS hash (as bytes32 hex string) is in results[2]
     // Convert it to regular IPFS base-58 encoded hash

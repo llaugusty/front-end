@@ -5,6 +5,8 @@
 const MapCache = require("map-cache")
 const fetch = require("cross-fetch")
 const FormData = require("form-data")
+const os = require("os")
+var ifaces = os.networkInterfaces();
 
 const Ports = {
   http: "80",
@@ -21,21 +23,34 @@ class IpfsService {
     ipfsApiPort
   } = {}) {
     var self = this;
-    window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;//compatibility for Firefox and chrome
-    var pc = new RTCPeerConnection({iceServers:[]}), noop = function(){};      
-    pc.createDataChannel('');//create a bogus data channel
-    pc.createOffer(pc.setLocalDescription.bind(pc), noop);// create offer and set local description
-    pc.onicecandidate = function(ice)
-    {
-    if (ice && ice.candidate && ice.candidate.candidate)
-    {
-      self.myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1];
-      pc.onicecandidate = noop;
-    }
-    };
 
+    Object.keys(ifaces).forEach(function (ifname) {
+      var alias = 0;
+    
+      ifaces[ifname].forEach(function (iface) {
+        if ('IPv4' !== iface.family || iface.internal !== false) {
+          // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+          return;
+        }
+    
+        if (alias >= 1) {
+          // this single interface has multiple ipv4 addresses
+          console.log(ifname + ':' + alias, iface.address);
+        } else {
+          // this interface has only one ipv4 adress
+          console.log(ifname, iface.address);
+        }
+        self.myIP = 'http://' + iface.address;
+        ++alias;
+      });
+    });
+
+    console.log('myip', this.myIP);
+    
     this.gateway = this.myIP + ':1234'
     this.api =  'http://localhost:5002'
+
+    this.submitFile = this.submitFile.bind(this);
   }
 
   async submitFile(jsonData) {
@@ -49,6 +64,7 @@ class IpfsService {
         body: formData
       })
       var res = await rawRes.json()
+      console.log('res', res)
       return `${this.gateway}/ipfs/${res.Hash}`
     } catch (e) {
       throw e
@@ -72,6 +88,7 @@ class IpfsService {
   }
 
   gatewayUrlForHash(ipfsHashStr) {
+    console.log('ipfsHash', ipfsHashStr)
     return `http://${this.gateway}/ipfs/${ipfsHashStr}`
   }
 }
