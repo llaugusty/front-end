@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from 'reactstrap';
+var Carousel = require('react-responsive-carousel').Carousel;
+
 import '../assets/css/ListingDetail.css';
+import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 // temporary - we should be getting an origin instance from our app,
 // not using a global singleton
@@ -53,7 +56,15 @@ class ListingDetail extends Component {
       <div className="container">
         <div className="col-12 listing-details">
         { loading && <p>Loading</p>}
-            {photo && <img src={photo} />}
+            { pictures &&
+              <Carousel showArrows={true}>
+              {pictures.map(pictureUrl => (
+                <div>
+                  <img src={pictureUrl} role='presentation' />
+                </div>
+              ))}
+          </Carousel>
+            }
 
             <div className="category placehold d-flex justify-content-betwe1en">
               <div>{category}</div>

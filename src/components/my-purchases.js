@@ -110,7 +110,7 @@ class MyPurchases extends Component {
         <div className="container">
           <div className="row">
             <div className="col-12">
-              <h1>My Purchases</h1>
+              <h2>My Purchases</h2>
             </div>
           </div>
           <div className="row">

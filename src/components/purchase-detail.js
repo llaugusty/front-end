@@ -5,8 +5,11 @@ import moment from 'moment'
 import Avatar from './avatar'
 import TransactionEvent from '../pages/purchases/transaction-event'
 import TransactionProgress from './transaction-progress'
+import {Button} from 'reactstrap';
+var Carousel = require('react-responsive-carousel').Carousel;
 
 import origin from '../services/origins'
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const web3 = origin.contractService.web3
 
@@ -95,7 +98,10 @@ class PurchaseDetail extends Component {
     this.loadPurchase()
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    const accounts = await origin.contractService.web3.eth.getAccounts();
+
+    this.setState({account: accounts[origin.contractService.id]});
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -105,7 +111,6 @@ class PurchaseDetail extends Component {
     if (prevState.purchase.listingAddress !== listingAddress) {
       this.loadListing(listingAddress)
       this.loadBuyer(buyerAddress)
-      this.loadReviews(listingAddress)
     }
 
     if (prevState.listing.sellerAddress !== sellerAddress) {
@@ -117,7 +122,6 @@ class PurchaseDetail extends Component {
     try {
       const listing = await origin.listings.get(addr)
       this.setState({ listing })
-      console.log('Listing: ', listing)
     } catch(error) {
       console.error(`Error loading listing ${addr}`)
       console.error(error)
@@ -126,12 +130,9 @@ class PurchaseDetail extends Component {
 
   async loadPurchase() {
     let purchaseAddress = this.props.match.params.address;
-    console.log('purchase', purchaseAddress);
     try {
       const purchase = await origin.purchases.get(purchaseAddress)
-      console.log(purchase)
       this.setState({ purchase })
-      console.log('Purchase: ', purchase)
 
       const logs = await origin.purchases.getLogs(purchaseAddress)
       this.setState({ logs })
@@ -210,7 +211,7 @@ class PurchaseDetail extends Component {
   }
 
   async confirmReceipt() {
-    const { purchaseAddress } = this.props
+    const purchaseAddress = this.props.match.params.address;
     const { rating, reviewText } = this.state.form
 
     try {
@@ -222,7 +223,7 @@ class PurchaseDetail extends Component {
       // why is this delay often required???
       setTimeout(() => {
         this.loadPurchase()
-        this.loadReviews(this.state.listing.address)
+        // this.loadReviews(this.state.listing.address)
       }, 1000)
     } catch(error) {
       console.error('Error marking purchase received by buyer')
@@ -231,10 +232,11 @@ class PurchaseDetail extends Component {
   }
 
   async confirmShipped() {
-    const { purchaseAddress } = this.props
-
+    const purchaseAddress = this.props.match.params.address;
+    
     try {
       const transaction = await origin.purchases.sellerConfirmShipped(purchaseAddress)
+      console.log('transaction', transaction);
       await transaction.whenFinished()
       // why is this delay often required???
       setTimeout(() => {
@@ -287,7 +289,7 @@ class PurchaseDetail extends Component {
   render() {
     const { web3Account } = this.props
 
-    const { buyer, form, listing, logs, purchase, reviews, seller } = this.state
+    const { buyer, form, listing, logs, purchase, reviews, seller, account } = this.state
     const { rating, reviewText } = form
     const buyersReviews = reviews.filter(r => r.revieweeRole === 'SELLER')
 
@@ -367,12 +369,18 @@ class PurchaseDetail extends Component {
               <div className="brdcrmb">
                 <Link to={`/users/${counterpartyUser.address}`}>{counterpartyUser.name}</Link>
               </div>
-              <h1>{listing.name}</h1>
+              <h1 style={{textAlign:"right"}}>{listing.name}</h1>
             </div>
           </div>
           <div className="transaction-status row">
-            <div className="col-12 col-lg-8">
+            <div className="col-12 col-lg-8" style={{marginBottom:"50px", marginTop:"10px"}}>
               <h2>Transaction Status</h2>
+              {
+                step === 1 && account == listing.sellerAddress && <Button color="primary" onClick={this.confirmShipped}>Confirm shipped</Button>
+              }
+              {
+                step === 2 && account == purchase.buyerAddress && <Button color="primary" onClick={this.confirmReceipt}>Confirm receipt</Button>
+              }
               <div className="row">
                 <div className="col-6">
 
@@ -449,18 +457,18 @@ class PurchaseDetail extends Component {
             </div> */}
           </div>
           <div className="row">
-            <div className="col-12 col-lg-8">
+            <div className="col-12">
               {listing.address &&
                 <Fragment>
                   <h2>Listing Details</h2>
                   {!!pictures.length &&
-                    <div className="carousel small">
+                    <Carousel showArrows={true}>
                       {pictures.map(pictureUrl => (
-                        <div className="photo" key={pictureUrl}>
+                        <div>
                           <img src={pictureUrl} role='presentation' />
                         </div>
                       ))}
-                    </div>
+                  </Carousel>
                   }
                   <div className="detail-info-box">
                     <h2 className="category placehold">{listing.category}</h2>

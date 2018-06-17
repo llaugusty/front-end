@@ -77,6 +77,11 @@ class ContractService {
   // Returns the first account listed
   async currentAccount() {
     const accounts = await this.web3.eth.getAccounts()
+
+    console.log('accounts', accounts);
+    console.log('this', this);
+    console.log('this.id', this.id);
+
     return accounts[this.id]
   }
 

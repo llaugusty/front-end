@@ -30,8 +30,8 @@ class Navigation extends Component {
 
   async componentWillReceiveProps(nextProps) {
     let account = await origin.contractService.web3.eth.getAccounts();
-
-    this.setState({account: account[this.props.id]})
+    let balance = await origin.contractService.web3.eth.getBalance(account[this.props.id])
+    this.setState({account: account[this.props.id], balance: balance / (10e17)})
   }
 
   logInOut() {
@@ -39,10 +39,10 @@ class Navigation extends Component {
   }
 
   render() {
-      const {account, ethPrice, logined} = this.state;
+      const {account, ethPrice, logined, balance} = this.state;
       return (
           <div>
-            <div style={{justifyContent:"space-between", display: "flex", flexDirection:"row"}}>
+            <div className="nav-nav" style={{justifyContent:"space-between", display: "flex", flexDirection:"row"}}>
                 <Nav>
                     <NavItem>
                         <NavLink href="/#/">Home</NavLink>
@@ -59,13 +59,15 @@ class Navigation extends Component {
                     <NavItem>
                         <NavLink href="/#/my-purchases">My Purchases</NavLink>
                     </NavItem>
+                    <NavItem>
+                        <NavLink href="/#/login" className="lg-btn" color="link" onClick={this.logInOut} style={{marginRight: "5px", borderRadius: 0}}>{this.props.isAuthenticated ? "Log out" : "Log in"}</NavLink>
+                    </NavItem>
                 </Nav>
                 <div style={{justifyContent: "flex-end", display: "flex"}}>
-                    <NavLink href="/#/login" className="lg-btn" color="link" onClick={this.logInOut} style={{marginRight: "5px", borderRadius: 0}}>{this.props.isAuthenticated ? "LOG OUT" : "LOG IN"}</NavLink>
                     {this.props.isAuthenticated &&
                     <div>
                         <Badge color="primary" style={{display:"block"}}>Address: {account}</Badge>
-                        <Badge color="secondary" style={{display:"block"}}>Balance: USD</Badge>
+                        <Badge color="secondary" style={{display:"block"}}>Balance: {balance} ETH = {balance * ethPrice} USD</Badge>
                         <Badge color="warning" style={{display:"block"}}>1 Eth = {ethPrice} USD</Badge>
                     </div>
                     }

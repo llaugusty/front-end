@@ -51,12 +51,11 @@ class ListingCard extends Component {
                 <CardTitle>{category}</CardTitle>
               </div>
               {price > 0 && <ListingCardPrices price={price} unitsAvailable={unitsAvailable} />}
-              <Button color="primary" onClick={this.toggle} style={{ marginBottom: '1rem', marginTop: "5px" }}> <h5 className="title placehold text-truncate">{name}</h5></Button>
-            <Collapse isOpen={this.state.collapse}>
+              <h5 className="title placehold text-truncate">{name}</h5>
+
               <div style={{position: "relative"}}>
                 <a onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} href={`/#/listing/${this.props.listingId}`}>{photo && <img src={photo} />}</a>
-              </div>
-            </Collapse></div>
+              </div></div>
             }
           </CardBody>
           </Card>

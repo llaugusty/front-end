@@ -82,6 +82,7 @@ class Container extends React.Component {
   onChange(e) {
       console.log('onChange', this);
       origin.contractService.id = e.target.value;
+      console.log('origin', origin);
         this.setState({id: e.target.value});
         this.forceUpdate()
     }
@@ -101,7 +102,7 @@ class Container extends React.Component {
       <div>
         <HashRouter>
             <div>
-                <Navigation isAuthenticated={isAuthenticated} id={id}/>
+                <Navigation className="nav-nav" isAuthenticated={isAuthenticated} id={id}/>
 
                 <Route exact path="/" render={() => !isAuthenticated ? <Redirect to="/login"/> : <App id={id}/>}/>
                 <Route exact path="/listing/:id" render={({match}) => !isAuthenticated ? <Redirect to="/login"/> : <ListingDetail match={match}/>}/>
@@ -110,7 +111,7 @@ class Container extends React.Component {
                 <Route exact path="/my-listing-detail/:address" component={MyListingDetail} />
                 <Route exact path="/my-sales" render={() => !isAuthenticated ? <Redirect to="/login"/> : <MySales id={id}/>}/>
                 <Route exact path="/my-purchases" render={() => !isAuthenticated ? <Redirect to="/login"/> : <MyPurchases id={id}/>}/>
-                <Route exact path="/purchases/:address" component={PurchaseDetail} />
+                <Route exact path="/purchases/:address" id={id} component={PurchaseDetail} />
                 {/* <PrivateRoute  path="/listing/:id" exact component={ ListingDetail } />
                 <PrivateRoute  path="/listing-create" exact component={ ListingCreate } />
                 <PrivateRoute  path="/my-listing" exact component={ MyListing } />

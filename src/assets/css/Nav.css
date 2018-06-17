@@ -11,6 +11,20 @@
     margin-bottom: 20px;
 }
 
+.nav a {
+    color: white;
+}
+
+.nav a:hover {
+    color: #dab1b1;
+}
+
+.nav-nav {
+    background: #212529;
+    height: 53px;
+    margin-bottom: 50px;
+}
+
 .badge {
     border-radius: 0;
 }
