@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import $ from 'jquery'
 import moment from 'moment'
 
 import origin from '../services/origins'
@@ -18,7 +17,7 @@ class MyPurchaseCard extends Component {
       const listing = await origin.listings.get(addr)
 
       this.setState({ listing, loading: false })
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching contract or IPFS info for listing: ${addr}`)
     }
   }
@@ -30,10 +29,10 @@ class MyPurchaseCard extends Component {
   render() {
     const { address, created, stage } = this.props.purchase
     const { category, name, pictures, price } = this.state.listing
-    const soldAt = created * 1000 // convert seconds since epoch to ms
+    const soldAt = created * 1000
     let step, verb
 
-    switch(stage) {
+    switch (stage) {
       case 'seller_pending':
         step = 3
         verb = 'Received'
@@ -71,19 +70,11 @@ class MyPurchaseCard extends Component {
               <p className="timestamp">{timestamp}</p>
               <div className="d-flex">
                 <p className="price">{`${Number(price).toLocaleString(undefined, { minimumFractionDigits: 3 })} ETH`}</p>
-                {/* Not Yet Relevant */}
-                {/* <p className="quantity">Quantity: {quantity.toLocaleString()}</p> */}
               </div>
-              {/*<TransactionProgress currentStep={step} perspective="buyer" purchase={this.props.purchase} subdued={true} />*/}
               <div className="actions d-flex">
                 <div className="links-container">
-                  {/*<a onClick={() => alert('To Do')}>Open a Dispute</a>*/}
                 </div>
                 <div className="button-container">
-                  {/* Hidden for current deployment */}
-                  {/* stage === 'buyer_pending' &&
-                    <a className="btn btn-primary btn-sm" onClick={() => alert('To Do')}>I&apos;ve Received the Order</a>
-                  */}
                 </div>
               </div>
             </div>

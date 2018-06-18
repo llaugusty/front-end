@@ -1,6 +1,3 @@
-// For now, we are just wrapping the methods that are already in
-// contractService and ipfsService.
-
 import ResourceBase from "./_resource-base"
 
 class Listings extends ResourceBase {
@@ -37,16 +34,9 @@ class Listings extends ResourceBase {
 
     return listing
   }
-
-  // This method is DEPRCIATED
   async getByIndex(listingIndex) {
     const contractData = await this.contractService.getListing(listingIndex)
-    console.log('contract', contractData);
     const ipfsData = await this.ipfsService.getFile(contractData.ipfsHash)
-    // ipfsService should have already checked the contents match the hash,
-    // and that the signature validates
-
-    // We explicitly set these fields to white list the allowed fields.
     const listing = {
       name: ipfsData.data.name,
       category: ipfsData.data.category,
@@ -62,8 +52,6 @@ class Listings extends ResourceBase {
       unitsAvailable: Number(contractData.unitsAvailable)
     }
 
-    // TODO: Validation
-
     return listing
   }
 
@@ -78,7 +66,6 @@ class Listings extends ResourceBase {
 
     let formListing = { formData: data }
 
-    // TODO: Why can't we take schematype from the formListing object?
     const jsonBlob = {
       'data': formListing.formData,
     }
@@ -87,7 +74,7 @@ class Listings extends ResourceBase {
     console.log('ipfs', this.ipfsService);
     let ipfsHash
     try {
-      // Submit to IPFS
+
       ipfsHash = await this.ipfsService.submitFile(jsonBlob)
       console.log('ipfsHash', ipfsHash)
     } catch (error) {
@@ -97,8 +84,7 @@ class Listings extends ResourceBase {
     console.log(`IPFS file created with hash: ${ipfsHash} for data:`)
     console.log(jsonBlob)
 
-    // Submit to ETH contract
-    const units = 1 // TODO: Allow users to set number of units in form
+    const units = 1 
     let transactionReceipt
     try {
       transactionReceipt = await this.contractService.submitListing(
@@ -111,13 +97,11 @@ class Listings extends ResourceBase {
       throw new Error(`ETH Failure: ${error}`)
     }
 
-    // Success!
     console.log(`Submitted to ETH blockchain with transactionReceipt.tx: ${transactionReceipt.tx}`)
     return transactionReceipt
   }
 
   async buy(address, unitsToBuy, ethToPay) {
-    // TODO: ethToPay should really be replaced by something that takes Wei.
     const value = this.contractService.web3.utils.toWei(String(ethToPay), "ether")
     return await this.contractFn(address, "buyListing", [unitsToBuy], {value:value, gas: 750000})
   }

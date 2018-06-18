@@ -59,12 +59,10 @@ class Purchases extends ResourceBase {
   }
 
   async _buildReview(data={}){
-    // Check Rating
     const rating = data.rating || 5
     if(!(rating >= 1 && rating <= 5)){
       throw new Error("You must set a rating between 1 and 5")
     }
-    // IPFS for review text, if needed
     let ipfsHashBytes = EMPTY_IPFS
     const reviewText = data.reviewText
     if(reviewText && typeof reviewText == "string" && reviewText.length > 2){
@@ -72,7 +70,6 @@ class Purchases extends ResourceBase {
       const ipfsHash = await this.ipfsService.submitFile(ipfsData)
       ipfsHashBytes = this.contractService.getBytes32FromIpfsHash(ipfsHash)
     }
-    // Return review data
     return {rating: rating, ipfsHashBytes: ipfsHashBytes} 
   }
 
@@ -81,12 +78,10 @@ class Purchases extends ResourceBase {
     const web3 = this.contractService.web3
     const contract = new web3.eth.Contract(this.contractDefinition.abi, address)
     return new Promise((resolve, reject) => {
-      // Get all logs on this contract
       contract.getPastEvents('allEvents', { fromBlock: 0 }, function(error, rawLogs) {
         if (error) {
           return reject(error)
         }
-        // Format logs we receive
         let logs = rawLogs
         .filter((x)=> x.event == "PurchaseChange")
         .map(log => {
@@ -99,7 +94,6 @@ class Purchases extends ResourceBase {
             event: log.event
           }
         })
-        // Fetch user and timestamp information for all logs, in parallel
         const addUserAddressFn = async event => {
           event.from = (await self.contractService.getTransaction(
             event.transactionHash

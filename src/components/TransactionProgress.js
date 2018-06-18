@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import moment from 'moment'
 
 class TransactionProgress extends Component {
   constructor(props) {
@@ -32,12 +31,11 @@ class TransactionProgress extends Component {
 
     this.setState({ progressCalculated: true, progressWidth })
   }
-  
+
   render() {
     const { currentStep, perspective, purchase, subdued } = this.props
     const { maxStep, progressCalculated, progressWidth } = this.state
 
-    // timestamps not yet available
     const soldAt = !!currentStep
     const fulfilledAt = currentStep > 1
     const receivedAt = currentStep > 2
@@ -55,7 +53,7 @@ class TransactionProgress extends Component {
               data-toggle="tooltip"
               data-placement="top"
               data-html="true"
-              title={null/*`Sold on<br /><strong>${moment(soldAt).format('MMM D, YYYY')}</strong>`*/}>
+              title={null}>
             </span>
           }
           {!fulfilledAt && <span className="progress-circle"></span>}
@@ -64,7 +62,7 @@ class TransactionProgress extends Component {
               data-toggle="tooltip"
               data-placement="top"
               data-html="true"
-              title={null/*`Sent by seller on<br /><strong>${moment(fulfilledAt).format('MMM D, YYYY')}</strong>`*/}>
+              title={null}>
             </span>
           }
           {!receivedAt && <span className="progress-circle"></span>}
@@ -73,7 +71,7 @@ class TransactionProgress extends Component {
               data-toggle="tooltip"
               data-placement="top"
               data-html="true"
-              title={null/*`Received by buyer on<br /><strong>${moment(receivedAt).format('MMM D, YYYY')}</strong>`*/}>
+              title={null}>
             </span>
           }
           {perspective === 'seller' && !withdrawnAt && <span className="progress-circle"></span>}
@@ -82,7 +80,7 @@ class TransactionProgress extends Component {
               data-toggle="tooltip"
               data-placement="top"
               data-html="true"
-              title={null/*`Funds withdrawn on<br /><strong>${moment(withdrawnAt).format('MMM D, YYYY')}</strong>`*/}>
+              title={null}>
             </span>
           }
         </div>

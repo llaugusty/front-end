@@ -16,9 +16,6 @@ class Navigation extends Component {
   }
 
   async componentDidMount() {
-    const ipfsd = require('electron').remote.getGlobal('ipfsd');
-
-
     let account = await origin.contractService.web3.eth.getAccounts();
     let ethPrice
 
@@ -26,7 +23,6 @@ class Navigation extends Component {
         ethPrice = json.ticker.price;
       }).catch(console.error)
     
-      console.log('props', this.props);
     this.setState({account: account[this.props.id], ethPrice})
   }
 

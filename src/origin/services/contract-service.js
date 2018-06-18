@@ -1,12 +1,7 @@
-import ClaimHolderRegisteredContract from "./../../contracts/ClaimHolderRegistered.json"
-import ClaimHolderPresignedContract from "./../../contracts/ClaimHolderPresigned.json"
-import ClaimHolderLibrary from "./../../contracts/ClaimHolderLibrary.json"
-import KeyHolderLibrary from "./../../contracts/KeyHolderLibrary.json"
 import ListingsRegistryContract from "./../../contracts/ListingsRegistry.json"
 import ListingContract from "./../../contracts/Listing.json"
 import PurchaseContract from "./../../contracts/Purchase.json"
 import UserRegistryContract from "./../../contracts/UserRegistry.json"
-import OriginIdentityContract from "./../../contracts/OriginIdentity.json"
 import bs58 from "bs58"
 import Web3 from "web3"
 
@@ -25,13 +20,7 @@ class ContractService {
       listingContract: ListingContract,
       purchaseContract: PurchaseContract,
       userRegistryContract: UserRegistryContract,
-      claimHolderRegisteredContract: ClaimHolderRegisteredContract,
-      claimHolderPresignedContract: ClaimHolderPresignedContract,
-      originIdentityContract: OriginIdentityContract
     }
-    this.libraries = {}
-    this.libraries.ClaimHolderLibrary = ClaimHolderLibrary
-    this.libraries.KeyHolderLibrary = KeyHolderLibrary
     for (let name in contracts) {
       this[name] = contracts[name]
       try {
@@ -41,16 +30,10 @@ class ContractService {
           options.contractAddresses[name]
         )
       } catch (e) {
-        /* Ignore */
       }
     }
   }
 
-  // Return bytes32 hex string from base58 encoded ipfs hash,
-  // stripping leading 2 bytes from 34 byte IPFS hash
-  // Assume IPFS defaults: function:0x12=sha2, size:0x20=256 bits
-  // E.g. "QmNSUYVKDSvPUnRLKmuxk9diJ6yS96r1TrAXzjTiBcCLAL" -->
-  // "0x017dfd85d4f6cb4dcd715a88101f7b1f06cd1e009b2327a0809d01eb9c91f231"
   getBytes32FromIpfsHash(ipfsListing) {
     return (
       "0x" +
@@ -61,31 +44,18 @@ class ContractService {
     )
   }
 
-  // Return base58 encoded ipfs hash from bytes32 hex string,
-  // E.g. "0x017dfd85d4f6cb4dcd715a88101f7b1f06cd1e009b2327a0809d01eb9c91f231"
-  // --> "QmNSUYVKDSvPUnRLKmuxk9diJ6yS96r1TrAXzjTiBcCLAL"
   getIpfsHashFromBytes32(bytes32Hex) {
-    // Add our default ipfs values for first 2 bytes:
-    // function:0x12=sha2, size:0x20=256 bits
-    // and cut off leading "0x"
     const hashHex = "1220" + bytes32Hex.slice(2)
     const hashBytes = Buffer.from(hashHex, "hex")
     const hashStr = bs58.encode(hashBytes)
     return hashStr
   }
 
-  // Returns the first account listed
   async currentAccount() {
     const accounts = await this.web3.eth.getAccounts()
-
-    console.log('accounts', accounts);
-    console.log('this', this);
-    console.log('this.id', this.id);
-
     return accounts[this.id]
   }
 
-  // async convenience method for getting block details
   getBlock(blockHash) {
     return new Promise((resolve, reject) => {
       this.web3.eth.getBlock(blockHash, (error, data) => {
@@ -98,7 +68,6 @@ class ContractService {
     })
   }
 
-  // async convenience method for getting transaction details
   getTransaction(transactionHash) {
     return new Promise((resolve, reject) => {
       this.web3.eth.getTransaction(transactionHash, (error, data) => {
@@ -118,8 +87,6 @@ class ContractService {
       const instance = await this.deployed(ListingsRegistryContract)
 
       const weiToGive = this.web3.utils.toWei(String(ethPrice), "ether")
-      // Note we cannot get the listingId returned by our contract.
-      // See: https://forum.ethereum.org/discussion/comment/31529/#Comment_31529
       return instance.methods
         .create(ipfsListing, weiToGive, units)
         .send({ from: account, gas: 4476768 })
@@ -179,7 +146,6 @@ class ContractService {
       throw error
     }
 
-    // Get total number of listings
     let listingsLength
     try {
       listingsLength = await instance.methods.listingsLength().call()
@@ -202,11 +168,6 @@ class ContractService {
       throw new Error(`Error fetching listingId: ${listingId}`)
     }
 
-    console.log('listting', listing)
-    // Listing is returned as array of properties.
-    // IPFS hash (as bytes32 hex string) is in results[2]
-    // Convert it to regular IPFS base-58 encoded hash
-    // Address of Listing contract is in: listing[0]
     const listingObject = {
       index: listingId,
       address: listing[0],
@@ -234,18 +195,8 @@ class ContractService {
         this.web3.eth.getTransaction(transactionHash, (error, transaction) => {
           if (transaction.blockNumber != null) {
             console.log(`Transaction mined at block ${transaction.blockNumber}`)
-            // TODO: Wait maximum number of blocks
-            // TODO (Stan): Confirm transaction *sucessful* with getTransactionReceipt()
-
-            // // TODO (Stan): Metamask web3 doesn't have this method. Probably could fix by
-            // // by doing the "copy local web3 over metamask's" technique.
-            // this.web3.eth.getTransactionReceipt(this.props.transactionHash, (error, transactionHash) => {
-            //   console.log(transactionHash)
-            // })
 
             clearInterval(txCheckTimer)
-            // Hack to wait two seconds, as results don't seem to be
-            // immediately available.
             setTimeout(() => resolve(transaction.blockNumber), 2000)
           }
         })
@@ -257,11 +208,9 @@ class ContractService {
   }
 
   async contractFn(contractDefinition, address, functionName, args = [], options = {}) {
-    // Setup options
-    const opts = Object.assign(options, {}) // clone options
+    const opts = Object.assign(options, {})
     opts.from = opts.from || (await this.currentAccount())
-    opts.gas = options.gas || 50000 // Default gas
-    // Get contract and run trasaction
+    opts.gas = options.gas || 50000
     const contract = await this.deployed(contractDefinition)
     contract.options.address = address
 
@@ -279,7 +228,6 @@ class ContractService {
     })
 
     transaction.tx = transaction.transactionHash
-    // Decorate transaction with whenFinished promise
     if (transaction.tx !== undefined) {
       transaction.whenFinished = async () => {
         await this.waitTransactionFinished(transaction.tx)

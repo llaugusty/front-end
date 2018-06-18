@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import MyListingCard from './my-listing-card'
+import MyListingCard from './MyListingCard'
 
 import origin from '../services/origins'
 import { RingLoader } from 'react-spinners';
@@ -29,7 +29,7 @@ class MyListings extends Component {
       const ids = await origin.listings.allIds()
 
       return await Promise.all(ids.map(this.loadListing))
-    } catch(error) {
+    } catch (error) {
       console.error('Error fetching listing ids')
     }
   }
@@ -45,14 +45,14 @@ class MyListings extends Component {
       }
 
       return listing
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching contract or IPFS info for listingId: ${id}`)
     }
   }
 
   async getAccount() {
     const accounts = await origin.contractService.web3.eth.getAccounts();
-    
+
     this.setState({ account: accounts[this.props.id] });
   }
 
@@ -78,7 +78,7 @@ class MyListings extends Component {
       listings[index] = listing
 
       this.setState({ listings })
-    } catch(error) {
+    } catch (error) {
       console.error(`Error handling update for listing: ${address}`)
     }
   }
@@ -97,9 +97,9 @@ class MyListings extends Component {
           <div className="row col-12">
             <div className="my-listings-list">
               {loading ? <RingLoader
-                color={'#4e2d33'} 
+                color={'#4e2d33'}
                 loading={true}
-                size={200} 
+                size={200}
                 className="loader"
               /> : listings.map(l => <MyListingCard key={`my-listing-${l.address}`} listing={l} handleUpdate={this.handleUpdate} />)}
               {!loading && listings.length === 0 && <img className="img-notfound" src="http://static.tapeytapey.com/assets/fe/images/noResult.jpg" />}

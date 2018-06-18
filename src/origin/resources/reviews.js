@@ -12,19 +12,16 @@ class Reviews extends ResourceBase{
       }
   }
 
-  // Temporary, until bridge server intergration   
   async _find_by_purchase_id(address){
     const self = this
     const web3 = this.contractService.web3
     const purchaseDefinition = this.contractService.purchaseContract
     const purchaseContract = new web3.eth.Contract(purchaseDefinition.abi, address)
     return new Promise((resolve, reject) => {
-      // Get all logs on this contract
       purchaseContract.getPastEvents('allEvents', { fromBlock: 0 }, function(error, rawLogs) {
         if (error) {
           return reject(error)
         }
-        // Format logs we receive
         let logs = rawLogs
         .filter((x)=> x.event == "PurchaseReview")
         .map(log => {
@@ -44,7 +41,6 @@ class Reviews extends ResourceBase{
             blockHash: log.blockHash
           }
         })
-        // Fetch user and timestamp information for all logs, in parallel
         const addReviewDetails = async event => {
           if(event.ipfsHash == undefined){
             return

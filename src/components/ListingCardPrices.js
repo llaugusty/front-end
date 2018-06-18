@@ -34,8 +34,7 @@ class ListingCardPrices extends Component {
     }
   }
 
-  retrieveConversion(currencyCode){
-    let targetCurrencyCode = currencyCode ? currencyCode : this.state.currencyCode
+  retrieveConversion(currencyCode) {
     let exchangeURL = this.state.exchangeBaseURL;
     exchangeURL += baseCurrencyCode.toLowerCase();
     exchangeURL += "-";
@@ -48,8 +47,8 @@ class ListingCardPrices extends Component {
     });
   }
 
-  formatApproxPrice(){
-    return Number(this.state.price * this.state.exchangeRate).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  formatApproxPrice() {
+    return Number(this.state.price * this.state.exchangeRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   render() {
@@ -58,9 +57,9 @@ class ListingCardPrices extends Component {
         <div className="d-flex align-items-center price-container">
           <div>
             <div className="d-inline-block price placehold">
-              {this.state.exchangeRate == null && "Loading..." }
-              {this.state.exchangeRate != null && this.formatApproxPrice() + " " + this.state.currencyCode }
-              <span className="alternate-price text-muted"> | {`${Number(this.state.price).toLocaleString(undefined, {minimumFractionDigits: 5, maximumFractionDigits: 9})}`} ETH</span>
+              {this.state.exchangeRate == null && "Loading..."}
+              {this.state.exchangeRate != null && this.formatApproxPrice() + " " + this.state.currencyCode}
+              <span className="alternate-price text-muted"> | {`${Number(this.state.price).toLocaleString(undefined, { minimumFractionDigits: 5, maximumFractionDigits: 9 })}`} ETH</span>
             </div>
             {this.props.unitsAvailable === 0 &&
               <span className="sold-banner">Sold</span>

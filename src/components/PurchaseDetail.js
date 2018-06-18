@@ -1,27 +1,14 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
-import $ from 'jquery'
-import moment from 'moment'
-import Avatar from './avatar'
-import TransactionEvent from '../pages/purchases/transaction-event'
-import TransactionProgress from './transaction-progress'
-import {Button} from 'reactstrap';
+import TransactionProgress from './TransactionProgress'
+import { Button } from 'reactstrap';
 var Carousel = require('react-responsive-carousel').Carousel;
 
 import origin from '../services/origins'
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
-const web3 = origin.contractService.web3
-
-/* Transaction stages: no disputes and no seller review of buyer/transaction
- *  - step 0 was creating the listing
- *  - nextSteps[0] equates to step 1, etc
- *  - even-numbered steps are seller's resposibility
- *  - odd-numbered steps are buyer's responsibility
- */
 const nextSteps = [
   {
-    // we should never be in this state
     buyer: {
       prompt: 'Purchase this listing',
       instruction: 'Why is this here if you have not yet purchased it?',
@@ -71,7 +58,7 @@ const nextSteps = [
 ]
 
 class PurchaseDetail extends Component {
-  constructor(props){
+  constructor(props) {
     super(props)
 
     this.confirmReceipt = this.confirmReceipt.bind(this)
@@ -101,7 +88,7 @@ class PurchaseDetail extends Component {
   async componentDidMount() {
     const accounts = await origin.contractService.web3.eth.getAccounts();
 
-    this.setState({account: accounts[origin.contractService.id]});
+    this.setState({ account: accounts[origin.contractService.id] });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -122,7 +109,7 @@ class PurchaseDetail extends Component {
     try {
       const listing = await origin.listings.get(addr)
       this.setState({ listing })
-    } catch(error) {
+    } catch (error) {
       console.error(`Error loading listing ${addr}`)
       console.error(error)
     }
@@ -139,7 +126,7 @@ class PurchaseDetail extends Component {
       console.log('Logs: ', logs)
 
       return purchase
-    } catch(error) {
+    } catch (error) {
       console.error(`Error loading purchase ${purchaseAddress}`)
       console.error(error)
     }
@@ -148,7 +135,7 @@ class PurchaseDetail extends Component {
   async getPurchaseAddress(addr, i) {
     try {
       return await origin.listings.purchaseAddressByIndex(addr, i)
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching purchase address at: ${i}`)
     }
   }
@@ -158,14 +145,10 @@ class PurchaseDetail extends Component {
       const length = await origin.listings.purchasesLength(listingAddress)
       console.log('Purchase count:', length)
 
-      // const purchaseAddresses = await Promise.all(
-      //   [...Array(length).keys()].map(i => this.getPurchaseAddress(listingAddress, i))
-      // )
-
       return await Promise.all(
         purchaseAddresses.map(addr => origin.purchases.get(addr))
       )
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching purchases for listing: ${listingAddress}`)
       console.error(error)
     }
@@ -174,14 +157,12 @@ class PurchaseDetail extends Component {
   async loadReviews(listingAddress) {
     try {
       const purchases = await this.loadPurchases(listingAddress)
-      console.log('PURCHASES', purchases)
       const reviews = await Promise.all(
         purchases.map(p => origin.reviews.find({ purchaseAddress: p.address }))
       )
       const flattened = [].concat(reviews)
-      console.log('Reviews:', flattened)
       this.setState({ reviews: flattened })
-    } catch(error) {
+    } catch (error) {
       console.error(error)
       console.error(`Error fetching reviews`)
     }
@@ -192,7 +173,7 @@ class PurchaseDetail extends Component {
       const user = await origin.users.get(addr)
       this.setState({ buyer: { user, address: addr } })
       console.log('Buyer: ', this.state.buyer)
-    } catch(error) {
+    } catch (error) {
       console.error(`Error loading buyer ${addr}`)
       console.error(error)
     }
@@ -204,7 +185,7 @@ class PurchaseDetail extends Component {
       console.log('user', user);
       this.setState({ seller: { user, address: addr } })
       console.log('Seller: ', this.state.seller)
-    } catch(error) {
+    } catch (error) {
       console.error(`Error loading seller ${addr}`)
       console.error(error)
     }
@@ -220,12 +201,10 @@ class PurchaseDetail extends Component {
         reviewText: reviewText.trim(),
       })
       await transaction.whenFinished()
-      // why is this delay often required???
       setTimeout(() => {
         this.loadPurchase()
-        // this.loadReviews(this.state.listing.address)
       }, 1000)
-    } catch(error) {
+    } catch (error) {
       console.error('Error marking purchase received by buyer')
       console.error(error)
     }
@@ -233,16 +212,15 @@ class PurchaseDetail extends Component {
 
   async confirmShipped() {
     const purchaseAddress = this.props.match.params.address;
-    
+
     try {
       const transaction = await origin.purchases.sellerConfirmShipped(purchaseAddress)
       console.log('transaction', transaction);
       await transaction.whenFinished()
-      // why is this delay often required???
       setTimeout(() => {
         this.loadPurchase()
       }, 1000)
-    } catch(error) {
+    } catch (error) {
       console.error('Error marking purchase shipped by seller')
       console.error(error)
     }
@@ -258,19 +236,15 @@ class PurchaseDetail extends Component {
         reviewText: reviewText.trim(),
       })
       await transaction.whenFinished()
-      // why is this delay often required???
       setTimeout(() => {
         this.loadPurchase()
       }, 1000)
-    } catch(error) {
+    } catch (error) {
       console.error('Error withdrawing funds for seller')
       console.error(error)
     }
   }
 
-  /*
-  * rating: 1 <= integer <= 5
-  */
   handleRating(rating) {
     this.setState(prevState => {
       return { form: { form: prevState.form, rating } }
@@ -293,12 +267,11 @@ class PurchaseDetail extends Component {
     const { rating, reviewText } = form
     const buyersReviews = reviews.filter(r => r.revieweeRole === 'SELLER')
 
-    if (!purchase.address || !listing.address ){
+    if (!purchase.address || !listing.address) {
       return null
     }
 
     let perspective
-    // may potentially be neither buyer nor seller
     if (web3Account === purchase.buyerAddress) {
       perspective = 'buyer'
     } else if (web3Account === listing.sellerAddress) {
@@ -307,10 +280,9 @@ class PurchaseDetail extends Component {
 
     const pictures = listing.pictures || []
     const category = listing.category || ""
-    const active = listing.unitsAvailable > 0 // Todo, move to origin.js, take into account listing expiration
-    const soldAt = purchase.created * 1000 // convert seconds since epoch to ms
+    const active = listing.unitsAvailable > 0
+    const soldAt = purchase.created * 1000
 
-    // log events
     const paymentEvent = logs.find(l => l.stage === 'shipping_pending')
     const paidAt = paymentEvent ? paymentEvent.timestamp * 1000 : null
     const fulfillmentEvent = logs.find(l => l.stage === 'buyer_pending')
@@ -320,7 +292,7 @@ class PurchaseDetail extends Component {
     const withdrawalEvent = logs.find(l => l.stage === 'complete')
     const withdrawnAt = withdrawalEvent ? withdrawalEvent.timestamp * 1000 : null
     const reviewedAt = null
-    const price = `${Number(listing.price).toLocaleString(undefined, {minimumFractionDigits: 3})} ETH` // change to priceEth
+    const price = `${Number(listing.price).toLocaleString(undefined, { minimumFractionDigits: 3 })} ETH`
 
     const counterparty = ['buyer', 'seller'].find(str => str !== perspective)
     const counterpartyUser = counterparty === 'buyer' ? buyer : seller
@@ -369,11 +341,11 @@ class PurchaseDetail extends Component {
               <div className="brdcrmb">
                 <Link to={`/users/${counterpartyUser.address}`}>{counterpartyUser.name}</Link>
               </div>
-              <h1 style={{textAlign:"right"}}>{listing.name}</h1>
+              <h1 style={{ textAlign: "right" }}>{listing.name}</h1>
             </div>
           </div>
           <div className="transaction-status row">
-            <div className="col-12 col-lg-8" style={{marginBottom:"50px", marginTop:"10px"}}>
+            <div className="col-12 col-lg-8" style={{ marginBottom: "50px", marginTop: "10px" }}>
               <h2>Transaction Status</h2>
               {
                 step === 1 && account == listing.sellerAddress && <Button color="primary" onClick={this.confirmShipped}>Confirm shipped</Button>
@@ -384,21 +356,21 @@ class PurchaseDetail extends Component {
               <div className="row">
                 <div className="col-6">
 
-                    <div className="d-flex">
-                      <div className="identification d-flex flex-column justify-content-between text-truncate">
-                        <div><span className="badge badge-dark">Seller</span></div>
-                        <div className="address text-muted text-truncate">{seller.address}</div>
-                      </div>
+                  <div className="d-flex">
+                    <div className="identification d-flex flex-column justify-content-between text-truncate">
+                      <div><span className="badge badge-dark">Seller</span></div>
+                      <div className="address text-muted text-truncate">{seller.address}</div>
                     </div>
+                  </div>
 
                 </div>
                 <div className="col-6">
-                    <div className="d-flex justify-content-end">
-                      <div className="identification d-flex flex-column text-right justify-content-between text-truncate">
-                        <div><span className="badge badge-dark">Buyer</span></div>
-                        <div className="address text-muted text-truncate">{buyer.address}</div>
-                      </div>
+                  <div className="d-flex justify-content-end">
+                    <div className="identification d-flex flex-column text-right justify-content-between text-truncate">
+                      <div><span className="badge badge-dark">Buyer</span></div>
+                      <div className="address text-muted text-truncate">{buyer.address}</div>
                     </div>
+                  </div>
                 </div>
                 <div className="col-12">
                   <TransactionProgress currentStep={step} maxStep={maxStep} purchase={listing} perspective={perspective} />
@@ -417,16 +389,6 @@ class PurchaseDetail extends Component {
                         }}>
                           <div className="form-group">
                             <label htmlFor="review">Review</label>
-                            {/* <div className="stars">{[...Array(5)].map((undef, i) => {
-                              return (
-                                <img
-                                  key={`rating-star-${i}`}
-                                  src={`/images/star-${rating > i ? 'filled' : 'empty'}.svg`}
-                                  alt="review rating star"
-                                  onClick={() => this.handleRating(i + 1)}
-                                />
-                              )
-                            })}</div> */}
                             <textarea
                               rows="4"
                               id="review"
@@ -452,9 +414,6 @@ class PurchaseDetail extends Component {
                 }
               </div>
             </div>
-            {/* <div className="col-12 col-lg-4">
-              {counterpartyUser.address && <UserCard title={counterparty} userAddress={counterpartyUser.address} />}
-            </div> */}
           </div>
           <div className="row">
             <div className="col-12">
@@ -468,23 +427,18 @@ class PurchaseDetail extends Component {
                           <img src={pictureUrl} role='presentation' />
                         </div>
                       ))}
-                  </Carousel>
+                    </Carousel>
                   }
                   <div className="detail-info-box">
                     <h2 className="category placehold">{listing.category}</h2>
                     <h1 className="title text-truncate placehold">{listing.name}</h1>
                     <p className="description placehold">{listing.description}</p>
-                    {/*!!listing.unitsAvailable && listing.unitsAvailable < 5 &&
-                      <div className="units-available text-danger">Just {listing.unitsAvailable.toLocaleString()} left!</div>
-                    */}
                   </div>
                   <hr />
                 </Fragment>
               }
               <div className="reviews">
                 <h2>Reviews <span className="review-count">{Number(buyersReviews.length).toLocaleString()}</span></h2>
-                {/* To Do: pagination */}
-                {/* <a href="#" className="reviews-link">Read More<img src="/images/carat-blue.svg" className="down carat" alt="down carat" /></a> */}
               </div>
             </div>
           </div>

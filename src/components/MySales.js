@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import MySaleCard from './my-sale-card'
+import MySaleCard from './MySaleCard'
 import { RingLoader } from 'react-spinners';
 
 import origin from '../services/origins'
@@ -27,11 +27,9 @@ class MySales extends Component {
 
   async getListingIds() {
     try {
-      console.log('hello world');
       const ids = await origin.listings.allIds()
-      console.log('all ids', ids);
       return await Promise.all(ids.map(this.loadListing))
-    } catch(error) {
+    } catch (error) {
       console.error('Error fetching listing ids')
     }
   }
@@ -41,7 +39,7 @@ class MySales extends Component {
       const purchAddr = await origin.listings.purchaseAddressByIndex(addr, i)
 
       return this.loadPurchase(purchAddr)
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching purchase address at: ${i}`)
     }
   }
@@ -55,7 +53,7 @@ class MySales extends Component {
       }
 
       return await Promise.all([...Array(len).keys()].map(i => this.getPurchaseAddress(addr, i)))
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching purchases length for listing: ${addr}`)
     }
   }
@@ -66,7 +64,6 @@ class MySales extends Component {
 
       const accounts = await origin.contractService.web3.eth.getAccounts();
 
-      // only save to state and get purchases for current user's listings
       if (listing.sellerAddress === accounts[this.props.id]) {
         const listings = [...this.state.listings, listing]
 
@@ -76,7 +73,7 @@ class MySales extends Component {
       }
 
       return listing
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching contract or IPFS info for listingId: ${id}`)
     }
   }
@@ -89,7 +86,7 @@ class MySales extends Component {
       this.setState({ purchases })
 
       return purchase
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching purchase: ${addr}`)
     }
   }
@@ -114,12 +111,12 @@ class MySales extends Component {
           <div className="row col-12 my-sales">
             <div className="my-listings-list">
               {loading ? <RingLoader
-                color={'#4e2d33'} 
+                color={'#4e2d33'}
                 loading={true}
-                size={200} 
+                size={200}
                 className="loader"
               /> : purchases.map(p => (
-                <MySaleCard 
+                <MySaleCard
                   key={`my-purchase-${p.address}`}
                   listing={listings.find(l => l.address === p.listingAddress)}
                   purchase={p} />

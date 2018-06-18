@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import MyPurchaseCard from './my-purchase-card'
+import MyPurchaseCard from './MyPurchaseCard'
 import { RingLoader } from 'react-spinners';
 
 import origin from '../services/origins'
@@ -17,20 +17,12 @@ class MyPurchases extends Component {
     await this.getListingIds()
   }
 
-  /*
-  * WARNING: These functions don't actually return what they might imply.
-  * They use return statements to chain together async calls. Oops.
-  *
-  * For now, we mock a getByPurchaserAddress request by fetching all
-  * listings individually and fetching all related purchases individually.
-  */
-
   async getListingIds() {
     try {
       const ids = await origin.listings.allIds()
 
       return await Promise.all(ids.map(this.loadListing))
-    } catch(error) {
+    } catch (error) {
       console.error('Error fetching listing ids')
     }
   }
@@ -40,7 +32,7 @@ class MyPurchases extends Component {
       const purchAddr = await origin.listings.purchaseAddressByIndex(addr, i)
 
       return this.loadPurchase(purchAddr)
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching purchase address at: ${i}`)
     }
   }
@@ -54,7 +46,7 @@ class MyPurchases extends Component {
       }
 
       return await Promise.all([...Array(len).keys()].map(i => this.getPurchaseAddress(addr, i)))
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching purchases length for listing: ${addr}`)
     }
   }
@@ -63,9 +55,9 @@ class MyPurchases extends Component {
     try {
       const listing = await origin.listings.getByIndex(id)
 
-      
+
       return this.getPurchasesLength(listing.address)
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching contract or IPFS info for listingId: ${id}`)
     }
   }
@@ -82,7 +74,7 @@ class MyPurchases extends Component {
       }
 
       return purchase
-    } catch(error) {
+    } catch (error) {
       console.error(`Error fetching purchase: ${addr}`, error)
     }
   }
@@ -94,7 +86,7 @@ class MyPurchases extends Component {
   }
 
   render() {
-    const { filter, loading, purchases } = this.state
+    const { loading, purchases } = this.state
 
     return (
       <div className="my-purchases-wrapper">
@@ -108,11 +100,11 @@ class MyPurchases extends Component {
             <div className="col-12">
               <div className="my-listings-list">
                 {loading ? <RingLoader
-                color={'#4e2d33'} 
-                loading={true}
-                size={200} 
-                className="loader"
-              /> : purchases.map(p => <MyPurchaseCard key={`my-purchase-${p.address}`} purchase={p} />)}
+                  color={'#4e2d33'}
+                  loading={true}
+                  size={200}
+                  className="loader"
+                /> : purchases.map(p => <MyPurchaseCard key={`my-purchase-${p.address}`} purchase={p} />)}
                 {!loading && purchases.length === 0 && <img className="img-notfound" src="http://static.tapeytapey.com/assets/fe/images/noResult.jpg" />}
               </div>
             </div>
