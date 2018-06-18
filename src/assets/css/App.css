@@ -5,6 +5,7 @@ h1 {
 
 .listing-card {
   margin: auto;
+  margin-bottom: 15px;
 }
 
 .listing-card a {
@@ -24,4 +25,9 @@ h1 {
   position: absolute;
   z-index: 100;
   top: 0;
+}
+
+.img-notfound {
+  height: 200px !important;
+  margin-left: 400px;
 }

@@ -9,7 +9,8 @@ const HttpIPFS = require('ipfs/src/http')
 const spawn = require('cross-spawn');
 const fixturesDir = __dirname + '/src/fixtures'
 const IPFS = require('ipfs')
-
+const IPFSFactory = require('ipfsd-ctl')
+const f = IPFSFactory.create()
 // const IpfsDaemon    = require('ipfs-daemon')
 
 
@@ -104,7 +105,21 @@ function createWindow() {
 app.on('ready', () => {
   createWindow();
 
-  startIpfs();
+  f.spawn(function (err, ipfsd) {
+    if (err) { throw err }
+    console.log('global', global);
+    ipfsd.start([], (err, ipfsApi) => {
+      console.log('ipfsApi', ipfsApi);
+      global.ipfsApi = ipfsApi;
+    });
+    
+    ipfsd.api.id(function (err, id) {
+      if (err) { throw err }
+      
+      console.log(id)
+      // ipfsd.stop()
+    })
+  })
   // const ipfsDaemon = spawn('ipfs', ['daemon']);
 
   // df.spawn((err, ipfsd) => {

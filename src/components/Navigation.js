@@ -16,7 +16,9 @@ class Navigation extends Component {
   }
 
   async componentDidMount() {
-      console.log('props', this.props);
+    const ipfsd = require('electron').remote.getGlobal('ipfsd');
+
+
     let account = await origin.contractService.web3.eth.getAccounts();
     let ethPrice
 

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from 'reactstrap';
 import '../assets/css/ListingDetail.css';
+import { RingLoader } from 'react-spinners';
 
 // temporary - we should be getting an origin instance from our app,
 // not using a global singleton
@@ -52,7 +53,12 @@ class MylistingDetail extends Component {
     return (
       <div className="container">
         <div className="col-12 listing-details">
-        { loading && <p>Loading</p>}
+        { loading && <RingLoader
+                color={'#4e2d33'} 
+                loading={true}
+                size={200} 
+                className="loader"
+              />}
             {photo && <img src={photo} />}
 
             <div className="category placehold d-flex justify-content-betwe1en">

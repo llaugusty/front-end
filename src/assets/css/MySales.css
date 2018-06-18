@@ -1,8 +1,14 @@
 .my-sales {
-    margin: 40px auto !important;
-
 }
 
 .sale.card {
     margin-bottom: 30px;
+}
+
+.my-listings-list {
+    width: 100%;
+}
+
+.css-8tmx9a {
+    margin: 180px auto;
 }

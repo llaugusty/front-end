@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from 'reactstrap';
 var Carousel = require('react-responsive-carousel').Carousel;
+import { RingLoader } from 'react-spinners';
+import Modal from 'react-modal';
 
 import '../assets/css/ListingDetail.css';
 import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -12,17 +14,48 @@ import origin from '../services/origins'
 
 import ListingCardPrices from './listing-card-prices.js';
 
+Modal.setAppElement(document.getElementById('root'))
+
+const customStyles = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)'
+  }
+};
+
 class ListingDetail extends Component {
 
   constructor(props) {
     super(props)
 
     this.state = {
-      loading: true
+      loading: true,
+      modalIsOpen: false
     }
 
     this.handleBuyClicked = this.handleBuyClicked.bind(this)
+    this.openModal = this.openModal.bind(this);
+    this.afterOpenModal = this.afterOpenModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
   }
+
+  openModal() {
+    this.setState({modalIsOpen: true});
+  }
+
+  afterOpenModal() {
+    // references are now sync'd and can be accessed.
+    this.subtitle.style.color = '#f00';
+  }
+
+  closeModal() {
+    this.setState({modalIsOpen: false});
+  }
+
 
   async componentDidMount() {
     console.log('propps', this.props);
@@ -55,7 +88,12 @@ class ListingDetail extends Component {
     return (
       <div className="container">
         <div className="col-12 listing-details">
-        { loading && <p>Loading</p>}
+        { loading && <RingLoader
+                color={'#4e2d33'} 
+                loading={true}
+                size={200} 
+                className="loader"
+              />}
             { pictures &&
               <Carousel showArrows={true}>
               {pictures.map(pictureUrl => (
@@ -68,13 +106,28 @@ class ListingDetail extends Component {
 
             <div className="category placehold d-flex justify-content-betwe1en">
               <div>{category}</div>
-              {!loading && <div>{this.props.listingId < 5 && <span className="featured badge">Featured</span>}</div>}
             </div>
             <h2 className="title placehold text-truncate">{name}</h2>
             
             {price > 0 && <ListingCardPrices price={price} unitsAvailable={unitsAvailable} />}
             <div className="d-flex justify-content-between">
-              <Button onClick={this.handleBuyClicked} color="primary" style={{margin: "5px 0px", width: "120px"}}>BUY</Button>
+              {!loading && 
+                <div>
+                  <Button color="primary" onClick={this.openModal}>BUY</Button>
+                  <Modal
+                    isOpen={this.state.modalIsOpen}
+                    onAfterOpen={this.afterOpenModal}
+                    onRequestClose={this.closeModal}
+                    style={customStyles}
+                    contentLabel="Example Modal"
+                  >
+
+                    <h2 style={{marginBottom: "40px"}} ref={subtitle => this.subtitle = subtitle}>Confirm</h2>
+                    <button style={{marginRight: "10px"}} onClick={this.handleBuyClicked}>OK</button>
+                    <button onClick={this.closeModal}>Cancel</button>
+                  </Modal>
+                </div>
+              }
             </div>
             <h3>{location}</h3>
             <p>{description}</p>

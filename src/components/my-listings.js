@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import MyListingCard from './my-listing-card'
 
 import origin from '../services/origins'
+import { RingLoader } from 'react-spinners';
 
 import '../assets/css/MyListings.css';
 
@@ -95,7 +96,13 @@ class MyListings extends Component {
           </div>
           <div className="row col-12">
             <div className="my-listings-list">
-              {listings.map(l => <MyListingCard key={`my-listing-${l.address}`} listing={l} handleUpdate={this.handleUpdate} />)}
+              {loading ? <RingLoader
+                color={'#4e2d33'} 
+                loading={true}
+                size={200} 
+                className="loader"
+              /> : listings.map(l => <MyListingCard key={`my-listing-${l.address}`} listing={l} handleUpdate={this.handleUpdate} />)}
+              {!loading && listings.length === 0 && <img className="img-notfound" src="http://static.tapeytapey.com/assets/fe/images/noResult.jpg" />}
             </div>
           </div>
         </div>

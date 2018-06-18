@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import MySaleCard from './my-sale-card'
+import { RingLoader } from 'react-spinners';
 
 import origin from '../services/origins'
 
@@ -101,16 +102,6 @@ class MySales extends Component {
 
   render() {
     const { filter, listings, loading, purchases } = this.state
-    const filteredPurchases = (() => {
-      switch(filter) {
-        case 'pending':
-          return purchases.filter(p => p.stage !== 'complete')
-        case 'complete':
-          return purchases.filter(p => p.stage === 'complete')
-        default:
-          return purchases
-      }
-    })()
 
     return (
       <div className="my-purchases-wrapper">
@@ -122,12 +113,18 @@ class MySales extends Component {
           </div>
           <div className="row col-12 my-sales">
             <div className="my-listings-list">
-              {filteredPurchases.map(p => (
+              {loading ? <RingLoader
+                color={'#4e2d33'} 
+                loading={true}
+                size={200} 
+                className="loader"
+              /> : purchases.map(p => (
                 <MySaleCard 
                   key={`my-purchase-${p.address}`}
                   listing={listings.find(l => l.address === p.listingAddress)}
                   purchase={p} />
               ))}
+              {!loading && purchases.length === 0 && <img className="img-notfound" src="http://static.tapeytapey.com/assets/fe/images/noResult.jpg" />}
             </div>
           </div>
         </div>

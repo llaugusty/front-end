@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import { BeatLoader } from 'react-spinners';
 
 import { DropdownItem, Button, Collapse, Card, CardImg, CardText, CardBody,
   CardTitle, CardSubtitle } from 'reactstrap';
@@ -45,7 +46,7 @@ class ListingCard extends Component {
       <div className="listing-card">
         <Card>
           <CardBody>
-            {loading ? "Loading" : 
+            {loading ? <BeatLoader size={10} color="#4e2d33"/> : 
             <div>
             <div className="">
                 <CardTitle>{category}</CardTitle>

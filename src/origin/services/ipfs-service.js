@@ -58,14 +58,17 @@ class IpfsService {
       console.log('jsonData', jsonData);
       var formData = new FormData()
       formData.append("file", new Buffer(JSON.stringify(jsonData)))
-      console.log("submitting File", formData);
-      var rawRes = await fetch(`${this.api}/api/v0/add`, {
-        method: "POST",
-        body: formData
-      })
-      var res = await rawRes.json()
-      console.log('res', res)
-      return `${this.gateway}/ipfs/${res.Hash}`
+      // console.log("submitting File", formData);
+      // var rawRes = await fetch(`${this.api}/api/v0/add`, {
+      //   method: "POST",
+      //   body: formData
+      // })
+
+      const ipfsApi = require('electron').remote.getGlobal('ipfsApi');
+      console.log('ipfsApi', ipfsApi);
+      var res = await ipfsApi.add(new Buffer(JSON.stringify(jsonData)));
+      console.log('ressss', res);
+      return `https://ipfs.io/ipfs/${res[0].hash}`
     } catch (e) {
       throw e
       throw new Error("Failure to submit file to IPFS", e)
