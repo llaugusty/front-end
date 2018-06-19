@@ -52,6 +52,8 @@ function createWindow() {
 
   mainWindow.setResizable(false)
 
+  mainWindow.maximize();
+
   let indexPath;
   if ( dev && process.argv.indexOf('--noDevServer') === -1 ) {
     indexPath = url.format({

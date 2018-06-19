@@ -4,6 +4,7 @@ import IpfsService from "./services/ipfs-service"
 var resources = {
   listings: require("./resources/listings"),
   purchases: require("./resources/purchases"),
+  users: require("./resources/users")
 }
 
 const defaultIpfsDomain = "localhost"

@@ -3,8 +3,10 @@ import { Button } from 'reactstrap';
 var Carousel = require('react-responsive-carousel').Carousel;
 import { RingLoader } from 'react-spinners';
 import Modal from 'react-modal';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 import '../assets/css/ListingDetail.css';
+import 'react-notifications/lib/notifications.css';
 
 import origin from '../services/origins'
 
@@ -63,6 +65,8 @@ class ListingDetail extends Component {
   }
 
   async handleBuyClicked() {
+    NotificationManager.success('Congratulation', 'Buying successfully');
+    this.closeModal();
     const unitsToBuy = 1
     const totalPrice = (unitsToBuy * this.state.price)
     try {
@@ -78,6 +82,7 @@ class ListingDetail extends Component {
     const { description, category, loading, name, pictures, price, unitsAvailable, location } = this.state
     return (
       <div className="container">
+        <NotificationContainer/>
         <div className="col-12 listing-details">
           {loading && <RingLoader
             color={'#4e2d33'}
@@ -95,7 +100,7 @@ class ListingDetail extends Component {
             </Carousel>
           }
 
-          <div className="category placehold d-flex justify-content-betwe1en">
+          <div className="category placehold d-flex justify-content-between">
             <div>{category}</div>
           </div>
           <h2 className="title placehold text-truncate">{name}</h2>
